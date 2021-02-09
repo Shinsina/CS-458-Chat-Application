@@ -1,5 +1,5 @@
 import React from 'react'
-import { firebaseAuth, usersRef} from '../firebase'
+import {firebaseAuth} from '../firebase'
 import {withRouter} from 'react-router-dom' 
 
 const AuthContext = React.createContext()
@@ -38,10 +38,10 @@ class AuthProvider extends React.Component {
                 displayName: displayName,
                 uniqueId: this.state.user.id
             }
-            usersRef.add({user})
+            /*usersRef.add({user})
             if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
-            }
+            }*/
         } catch(error) {
             this.setState({
                 authMessage: error.message
@@ -55,9 +55,9 @@ class AuthProvider extends React.Component {
                 email,
                 password
             )
-            if(window.confirm("Would you like to be redirected to your profile?")) {
+            /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
-            }
+            }*/
         } catch(error) {
             this.setState({
                 authMessage: error.message
