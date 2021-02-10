@@ -1,5 +1,5 @@
 import React from 'react'
-import {firebaseAuth} from '../firebase'
+import {firebaseAuth, usersRef, storage} from '../firebase'
 import {withRouter} from 'react-router-dom' 
 
 const AuthContext = React.createContext()
@@ -7,7 +7,8 @@ const AuthContext = React.createContext()
 class AuthProvider extends React.Component {
     state = {
         user: {},
-        authMessage: ''
+        authMessage: '',
+        imageUrl: '',
     }
 
     componentDidMount() {
@@ -27,19 +28,43 @@ class AuthProvider extends React.Component {
         })
     }
     
-    signUp = async (displayName, email, password, e) => {
+    signUp = async (displayName, email, password, image, e) => {
         try {
             e.preventDefault()
+            console.log(image)
             await firebaseAuth.createUserWithEmailAndPassword(
                 email,
                 password
             )
-            const user = {
-                displayName: displayName,
-                uniqueId: this.state.user.id
-            }
-            /*usersRef.add({user})
-            if(window.confirm("Would you like to be redirected to your profile?")) {
+            if (image === '') {
+                console.log(`not an image, the image file is a ${typeof(image)}`)
+            } 
+            const uploadTask = storage.ref(`/images/${image.name}`).put(image)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //console.log(snapShot)
+            }, (err) => {
+                //console.log(err)
+            }, async () => {
+                await storage.ref('images').child(image.name).getDownloadURL()
+                .then(fireBaseURL => {
+                    this.state.imageUrl = fireBaseURL
+                    console.log(this.state.imageUrl)
+                    console.log(fireBaseURL)
+                })
+                const user = {
+                    profilePicture: this.state.imageUrl,
+                    displayName: displayName,
+                    uniqueId: this.state.user.id,
+                    contactList: [],
+                    blockList: [],
+                    darkMode: true,
+                    locationTracking: false,
+    
+                }
+                usersRef.add({user})
+            })
+            /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
             }*/
         } catch(error) {

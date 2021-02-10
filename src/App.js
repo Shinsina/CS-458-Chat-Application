@@ -1,5 +1,6 @@
 import React from 'react';
 import AuthProvider from './components/AuthContext'
+import LogInScreen from './components/LogInScreen'
 import {BrowserRouter,Switch,Route} from 'react-router-dom';
 import ReactHtmlParser from 'react-html-parser';
 import {Editor} from '@tinymce/tinymce-react';
@@ -9,7 +10,7 @@ function App() {
     <BrowserRouter>
     <AuthProvider>
     <Switch> 
-    <p className="block xl:text-9xl lg:text-7xl md:text-4xl sm-text-3xl break-words text-center">TESTING</p>
+    <Route exact path="/" component={LogInScreen}/>
     </Switch>
     </AuthProvider>
     </BrowserRouter>
