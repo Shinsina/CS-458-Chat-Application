@@ -31,7 +31,7 @@ class AuthProvider extends React.Component {
     signUp = async (displayName, email, password, image, e) => {
         try {
             e.preventDefault()
-            console.log(image)
+            //console.log(image)
             await firebaseAuth.createUserWithEmailAndPassword(
                 email,
                 password
@@ -49,8 +49,8 @@ class AuthProvider extends React.Component {
                 await storage.ref('images').child(image.name).getDownloadURL()
                 .then(fireBaseURL => {
                     this.state.imageUrl = fireBaseURL
-                    console.log(this.state.imageUrl)
-                    console.log(fireBaseURL)
+                    //console.log(this.state.imageUrl)
+                    //console.log(fireBaseURL)
                 })
                 const user = {
                     profilePicture: this.state.imageUrl,
@@ -96,7 +96,7 @@ class AuthProvider extends React.Component {
                 user: {}
             })
             this.props.history.push(`/`)
-            console.log('signed out')
+            //console.log('signed out')
         } catch(error) {
             this.setState({
                 authMessage: error.messages

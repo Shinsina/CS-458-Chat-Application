@@ -28,7 +28,7 @@ class LogInScreen extends React.Component {
     render() {
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage}) => (
+            {({signUp, logIn, user, authMessage, logOut}) => (
                 <>
                 {!user.id ? (
                     <div className='signUpForm bg-gray-500 h-screen'>
@@ -59,6 +59,7 @@ class LogInScreen extends React.Component {
                 ) : (
                     <>
                     <p>LOGGED IN {user.id}</p>
+                    <button onClick={(e)=> logOut()}>Log Out</button>
                     </>
                  )}
             </>
