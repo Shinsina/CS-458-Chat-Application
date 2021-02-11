@@ -37,8 +37,19 @@ class AuthProvider extends React.Component {
                 password
             )
             if (image === '') {
-                console.log(`not an image, the image file is a ${typeof(image)}`)
+                //console.log(`not an image, the image file is a ${typeof(image)}`)
+                const user = {
+                    profilePicture: 'https://firebasestorage.googleapis.com/v0/b/chat-app-8b206.appspot.com/o/images%2Favatardefault_92824.png?alt=media&token=716c8089-4bbe-4e41-96bb-80e1d336a815',
+                    displayName: displayName,
+                    uniqueId: this.state.user.id,
+                    contactList: [],
+                    blockList: [],
+                    darkMode: true,
+                    locationTracking: false,
+                }
+                usersRef.add({user})
             } 
+            else {
             const uploadTask = storage.ref(`/images/${image.name}`).put(image)
             uploadTask.on('state_changed', 
             (snapShot) => {
@@ -64,6 +75,7 @@ class AuthProvider extends React.Component {
                 }
                 usersRef.add({user})
             })
+        }
             /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
             }*/

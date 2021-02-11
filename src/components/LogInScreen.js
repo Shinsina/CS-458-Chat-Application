@@ -48,7 +48,7 @@ class LogInScreen extends React.Component {
                         ) :
                             (<div className="FormContent block text-center space-y-4 2xl:text-4xl">
                             <span className="block">{authMessage ? <span>{authMessage}</span> : ''}</span>
-                            <span className="block"><input type="file" onChange={this.handleImage} /></span>
+                            <span className="block"><p>(Optional) Profile Picture: </p><input type="file" onChange={this.handleImage} /></span>
                             <span className="block"><input ref={this.displayNameInput} type="text" placeholder='Enter a Display Name'/></span>
                             <span className="block"><input ref={this.emailInput} type='email' placeholder='Enter your email'/></span>
                             <span className="block"><input ref={this.passwordInput} type='password' placeholder='Enter your password'/></span>
