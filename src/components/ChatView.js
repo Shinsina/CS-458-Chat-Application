@@ -10,13 +10,18 @@ class ChatView extends React.Component {
             content: ''
         }
         this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     handleChange(content, editor) {
         this.setState({content});
       }
+    handleSubmit(event) {
+        event.preventDefault();
+      }
     render () {
         return (
             <>
+            <AuthConsumer>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
              'advlist autolink lists link image charmap print preview anchor',
              'searchreplace visualblocks code fullscreen',
@@ -26,7 +31,8 @@ class ChatView extends React.Component {
             alignleft aligncenter alignright alignjustify | \
             bullist numlist outdent indent | removeformat | help'}}
             onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
-  </span>
+            </span>
+            </AuthConsumer>
             </>
         )
     }

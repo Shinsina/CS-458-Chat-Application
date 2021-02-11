@@ -22,13 +22,14 @@ class LogInScreen extends React.Component {
     handleImage = (e) => {
         e.preventDefault()
         const image = e.target.files[0]
-        this.state.imageFile = image;
+        //this.state.imageFile = image;
+        this.setState({imageFile: image})
     }
     
     render() {
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage, logOut}) => (
+            {({signUp, logIn, user, authMessage, logOut, userInfo}) => (
                 <>
                 {!user.id ? (
                     <div className='signUpForm bg-gray-500 h-screen'>
@@ -58,7 +59,7 @@ class LogInScreen extends React.Component {
                     </div>
                 ) : (
                     <>
-                    <p>LOGGED IN {user.id}</p>
+                    <p>LOGGED IN</p>
                     <button onClick={(e)=> logOut()}>Log Out</button>
                     </>
                  )}

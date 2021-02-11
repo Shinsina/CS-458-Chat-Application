@@ -9,6 +9,7 @@ class AuthProvider extends React.Component {
         user: {},
         authMessage: '',
         imageUrl: '',
+        userInfo: {},
     }
 
     componentDidMount() {
@@ -20,12 +21,14 @@ class AuthProvider extends React.Component {
                         email: user.email
                     }
                 })
+                this.fetchUser(this.state.user.id);
             } else {
                 this.setState({
                     user: {}
                 })
             }
         })
+        
     }
     
     signUp = async (displayName, email, password, image, e) => {
@@ -71,7 +74,6 @@ class AuthProvider extends React.Component {
                     blockList: [],
                     darkMode: true,
                     locationTracking: false,
-    
                 }
                 usersRef.add({user})
             })
@@ -95,6 +97,7 @@ class AuthProvider extends React.Component {
             /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
             }*/
+            this.fetchUser(this.state.user.id)
         } catch(error) {
             this.setState({
                 authMessage: error.message
@@ -105,7 +108,8 @@ class AuthProvider extends React.Component {
         try {
             firebaseAuth.signOut()
             this.setState ({
-                user: {}
+                user: {},
+                userInfo: {}
             })
             this.props.history.push(`/`)
             //console.log('signed out')
@@ -116,6 +120,30 @@ class AuthProvider extends React.Component {
         }
     }
     
+    fetchUser = async userId => {
+        try {
+            const displayName = await usersRef
+            .where('user.uniqueId','==',userId)
+            .get()
+            displayName.forEach(doc => {
+                this.setState({
+                userInfo: {
+                    profilePicture: doc.data().user.profilePicture,
+                    displayName: doc.data().user.displayName,
+                    uniqueId: doc.data().user.uniqueId,
+                    contactList: doc.data().user.contactList,
+                    blockList: doc.data().user.blockList,
+                    darkMode: doc.data().user.darkMode,
+                    locationTracking: doc.data().user.locationTracking,
+                }
+                })
+            })
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
+
     render () {
         return (
             <AuthContext.Provider
@@ -124,7 +152,8 @@ class AuthProvider extends React.Component {
                 signUp: this.signUp,
                 logIn: this.logIn,
                 logOut: this.logOut,
-                authMessage: this.state.authMessage
+                authMessage: this.state.authMessage,
+                userInfo: this.state.userInfo,
                 }}>
                 {this.props.children}
             </AuthContext.Provider>
