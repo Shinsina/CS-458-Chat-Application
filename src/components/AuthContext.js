@@ -1,5 +1,5 @@
 import React from 'react'
-import {firebaseAuth, usersRef, storage} from '../firebase'
+import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
 import {withRouter} from 'react-router-dom' 
 
 const AuthContext = React.createContext()
@@ -10,6 +10,7 @@ class AuthProvider extends React.Component {
         authMessage: '',
         imageUrl: '',
         userInfo: {},
+        userChats: []
     }
 
     componentDidMount() {
@@ -122,10 +123,10 @@ class AuthProvider extends React.Component {
     
     fetchUser = async userId => {
         try {
-            const displayName = await usersRef
+            const currentUser = await usersRef
             .where('user.uniqueId','==',userId)
             .get()
-            displayName.forEach(doc => {
+            currentUser.forEach(doc => {
                 this.setState({
                 userInfo: {
                     profilePicture: doc.data().user.profilePicture,
@@ -144,6 +145,37 @@ class AuthProvider extends React.Component {
         }
     }
 
+    createChat = async (chatterId) => {
+        try {
+            const chat = {
+                chatters: [this.state.userInfo.uniqueId,chatterId],
+                messages: []
+            }
+            chatsRef.add({chat})
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    fetchChats = async () => {
+        try {
+        const test = await chatsRef
+        .get()
+        test.forEach(doc => {
+            //console.log(doc.id, '=>', doc.data().chat.chatters.toString())
+            if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId)){
+                //console.log("HELLO")
+              this.setState({userChats: [...this.state.userChats, doc.id]})
+              console.log(this.state.userChats)
+            }
+        })
+        }
+        catch(error) {
+            console.log(error)
+        }
+    }
+
     render () {
         return (
             <AuthContext.Provider
@@ -154,6 +186,8 @@ class AuthProvider extends React.Component {
                 logOut: this.logOut,
                 authMessage: this.state.authMessage,
                 userInfo: this.state.userInfo,
+                createChat: this.createChat,
+                fetchChats: this.fetchChats
                 }}>
                 {this.props.children}
             </AuthContext.Provider>
