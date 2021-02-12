@@ -176,6 +176,10 @@ class AuthProvider extends React.Component {
         }
     }
 
+    goToChat = (chatId) => {
+        this.props.history.push(`/${chatId}`)
+    }
+
     render () {
         return (
             <AuthContext.Provider
@@ -186,8 +190,10 @@ class AuthProvider extends React.Component {
                 logOut: this.logOut,
                 authMessage: this.state.authMessage,
                 userInfo: this.state.userInfo,
+                userChats: this.state.userChats,
                 createChat: this.createChat,
-                fetchChats: this.fetchChats
+                fetchChats: this.fetchChats,
+                goToChat: this.goToChat
                 }}>
                 {this.props.children}
             </AuthContext.Provider>

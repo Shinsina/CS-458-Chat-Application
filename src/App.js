@@ -12,7 +12,7 @@ function App() {
     <AuthProvider>
     <Switch> 
     <Route exact path="/" component={LogInScreen}/>
-    <Route exact path="/chatview" component={ChatView}/>
+    <Route exact path="/:chatId" component={ChatView}/>
     </Switch>
     </AuthProvider>
     </BrowserRouter>

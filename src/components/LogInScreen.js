@@ -29,7 +29,7 @@ class LogInScreen extends React.Component {
     render() {
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat}) => (
                 <>
                 {!user.id ? (
                     <div className='signUpForm bg-gray-500 h-screen'>
@@ -60,6 +60,11 @@ class LogInScreen extends React.Component {
                 ) : (
                     <>
                     <p>LOGGED IN</p>
+                    {Object.keys({userChats}).map(key =>
+                        <div key={key}>
+                            <button onClick={(e) => goToChat({userChats}[key])}>{{userChats}[key]}</button>
+                        </div>
+                        )}
                     <button onClick={(e) => fetchChats()}>Testing 123</button>
                     <button onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>Create Conversation</button>
                     <button onClick={(e)=> logOut()}>Log Out</button>
