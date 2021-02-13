@@ -65,14 +65,25 @@ class ChatView extends React.Component {
             {({userInfo})=> (
             <>
             <div className="bg-gray-500 h-screen">
-            <div className="h-3/4">
+            <div className="h-2/3">
             <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatId}</p></div>
+            <div className="h-full overflow-y-scroll">
             {Object.keys(this.state.messages).map(key => 
+                
                 <div key={key}>
-                    <div>{ReactHtmlParser(this.state.messages[key].content)}</div>
+                    {this.state.messages[key].userId === userInfo.uniqueId ? (
+                    <div className="flex justify-end py-4">
+                    <div className="bg-yellow-500">{ReactHtmlParser(this.state.messages[key].content)}</div>
+                    </div>) 
+                    : (
+                    <div className="flex justify-start py-4">
+                    <div className="bg-green-500">{ReactHtmlParser(this.state.messages[key].content)}</div>
+                    </div>
+                    )}
+                    
                 </div>
                 )}
-            </div>
+                </div>
             <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
             <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-full" type="submit">Submit</button></span>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
@@ -86,6 +97,7 @@ class ChatView extends React.Component {
             onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>
             </form>
+            </div>
             </div>
             </>
                 )}
