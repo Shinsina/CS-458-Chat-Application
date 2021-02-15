@@ -120,6 +120,17 @@ class AuthProvider extends React.Component {
             })
         }
     }
+
+    goToMainMenu = ()=>{
+        try{
+            this.props.history.push(`/:mainMenu`)
+        }
+        catch(error){
+            this.setState({
+            authMessage: error.message
+            })
+        }
+    }
     
     fetchUser = async userId => {
         try {
