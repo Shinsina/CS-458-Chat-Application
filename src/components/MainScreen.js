@@ -18,7 +18,17 @@ class MainScreen extends React.Component {
     render() {
     return (
         <AuthConsumer>
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat}) => (
              <>
+             <p>LOGGED IN</p>
+                    {Object.keys({userChats}).map(key =>
+                        <div key={key}>
+                            <button onClick={(e) => goToChat({userChats}[key])}>{{userChats}[key]}</button>
+                        </div>
+                        )}
+                    <button onClick={(e) => fetchChats()}>Testing 123</button>
+                    <button onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>Create Conversation</button>
+                    <button onClick={(e)=> logOut()}>Log Out</button>
              <div className='storyScreen bg-gray-300 h-48'>
              <div className="storyHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
                     <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">Stories</p>
@@ -36,6 +46,7 @@ class MainScreen extends React.Component {
                         <button className="border-black border-2 bg-yellow-500" onClick={(e)=> "Create Chat"}>Create Chat</button></span>
                     </div>
             </>
+            )}
         </AuthConsumer>
     )
     }

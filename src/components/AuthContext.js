@@ -123,7 +123,7 @@ class AuthProvider extends React.Component {
 
     goToMainMenu = ()=>{
         try{
-            this.props.history.push(`/:mainMenu`)
+            this.props.history.push(`/mainMenu`)
         }
         catch(error){
             this.setState({

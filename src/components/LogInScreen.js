@@ -1,5 +1,6 @@
 import React from 'react'
 import {AuthConsumer} from './AuthContext'
+import MainScreen from './MainScreen'
 
 
 class LogInScreen extends React.Component {
@@ -59,15 +60,8 @@ class LogInScreen extends React.Component {
                     </div>
                 ) : (
                     <>
-                    <p>LOGGED IN</p>
-                    {Object.keys({userChats}).map(key =>
-                        <div key={key}>
-                            <button onClick={(e) => goToChat({userChats}[key])}>{{userChats}[key]}</button>
-                        </div>
-                        )}
-                    <button onClick={(e) => fetchChats()}>Testing 123</button>
-                    <button onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>Create Conversation</button>
-                    <button onClick={(e)=> logOut()}>Log Out</button>
+                    <MainScreen/>
+                    
                     </>
                  )}
             </>
