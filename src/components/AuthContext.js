@@ -188,7 +188,7 @@ class AuthProvider extends React.Component {
     }
 
     goToChat = (chatId) => {
-        this.props.history.push(`/${chatId}`)
+        this.props.history.push(`/${this.state.user.id}/${chatId}`)
     }
 
     render () {
