@@ -40,9 +40,9 @@ class MainScreen extends React.Component {
                     <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
                         
                     <button className="border-black border-2 bg-yellow-500" onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>Create Chat</button>
-                        {Object.keys({userChats}).map(key =>
+                        {Object.keys(userChats).map(key =>
                         <div key={key}>
-                            <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat({userChats}[key])}>Go to Chat</button>
+                            <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(userChats[key])}>Go to Chat: {userChats[key]}</button>
                         </div>
                         )}
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e) => fetchChats()}>Fetch Chats</button>

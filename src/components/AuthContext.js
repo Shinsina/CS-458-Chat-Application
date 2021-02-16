@@ -177,6 +177,7 @@ class AuthProvider extends React.Component {
 
     fetchChats = async () => {
         try {
+        this.setState({userChats: []})
         const test = await chatsRef
         .get()
         test.forEach(doc => {
@@ -184,9 +185,9 @@ class AuthProvider extends React.Component {
             if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId)){
                 //console.log("HELLO")
               this.setState({userChats: [...this.state.userChats, doc.id]})
-              console.log(this.state.userChats)
             }
         })
+        console.log(this.state.userChats)
         }
         catch(error) {
             console.log(error)
