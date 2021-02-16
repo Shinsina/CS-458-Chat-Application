@@ -50,6 +50,8 @@ class AuthProvider extends React.Component {
                     blockList: [],
                     darkMode: true,
                     locationTracking: false,
+                    onlineStatus: true,
+                    activityStatus: ''
                 }
                 usersRef.add({user})
             } 
@@ -75,6 +77,8 @@ class AuthProvider extends React.Component {
                     blockList: [],
                     darkMode: true,
                     locationTracking: false,
+                    onlineStatus: true,
+                    activityStatus: ''
                 }
                 usersRef.add({user})
             })
@@ -147,6 +151,8 @@ class AuthProvider extends React.Component {
                     blockList: doc.data().user.blockList,
                     darkMode: doc.data().user.darkMode,
                     locationTracking: doc.data().user.locationTracking,
+                    onlineStatus: true,
+                    activityStatus: doc.data().user.activityStatus,
                 }
                 })
             })
