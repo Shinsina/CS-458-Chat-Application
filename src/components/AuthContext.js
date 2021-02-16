@@ -160,9 +160,9 @@ class AuthProvider extends React.Component {
         try {
             const chat = {
                 chatters: [this.state.userInfo.uniqueId,chatterId],
-                messages: []
             }
-            chatsRef.add({chat})
+            const messages = []
+            chatsRef.add({chat,messages})
         }
         catch(error){
             console.log(error)
