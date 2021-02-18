@@ -23,9 +23,7 @@ class ContactScreen extends React.Component {
     render() {
         return (
         <AuthConsumer>
-        {({user}) => (
-            
-        )}
+        {({user}) => (<></>)}
         </AuthConsumer>
         )
     }
