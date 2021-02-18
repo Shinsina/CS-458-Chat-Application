@@ -42,7 +42,7 @@ class ChatView extends React.Component {
         this.setState({messages: [...this.state.messages, message]})
         //chatsRef.add({message})
         chatsRef.doc(this.state.chatId).update({
-            messages: firebase.firestore.FieldValue.arrayUnion(message)
+            'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
         })
       }
 
@@ -51,7 +51,7 @@ class ChatView extends React.Component {
             const chat = chatsRef.doc(chatId);
             const doc = await chat.get();
             //console.log(doc.data().messages)
-            this.setState({messages: doc.data().messages})
+            this.setState({messages: doc.data().chat.messages})
         }
         catch(error) {
             console.log(error)

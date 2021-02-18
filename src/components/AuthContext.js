@@ -2,6 +2,9 @@ import React from 'react'
 import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
 import {withRouter} from 'react-router-dom' 
 
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+
 const AuthContext = React.createContext()
 
 class AuthProvider extends React.Component {
@@ -154,21 +157,24 @@ class AuthProvider extends React.Component {
                     onlineStatus: true,
                     activityStatus: doc.data().user.activityStatus,
                 }
-                })
+                })       
             })
+           
         }
         catch (error) {
             console.log(error)
         }
     }
 
+
+
     createChat = async (chatterId) => {
         try {
             const chat = {
                 chatters: [this.state.userInfo.uniqueId,chatterId],
+                messages: [],
             }
-            const messages = []
-            chatsRef.add({chat,messages})
+            chatsRef.add({chat})
         }
         catch(error){
             console.log(error)
