@@ -208,6 +208,10 @@ class AuthProvider extends React.Component {
         this.props.history.push(`/ProfileScreen`)
     }
 
+    goToContacts = () => {
+        this.props.history.push(`/Contacts`)
+    }
+
     chatBot = () => {
         this.props.history.push(`/BotView`)
     }
@@ -227,6 +231,7 @@ class AuthProvider extends React.Component {
                 fetchChats: this.fetchChats,
                 goToChat: this.goToChat,
                 goToProfile: this.goToProfile,
+                goToContacts: this.goToContacts,
                 chatBot: this.chatBot,
                 }}>
                 {this.props.children}
@@ -237,4 +242,4 @@ class AuthProvider extends React.Component {
 
 const AuthConsumer = AuthContext.Consumer
 export default withRouter(AuthProvider)
-export { AuthConsumer}
+export { AuthConsumer }

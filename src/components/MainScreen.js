@@ -40,7 +40,7 @@ class MainScreen extends React.Component {
         
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts}) => (
              <>
              <div className='storyScreen bg-gray-300 h-32'>
              <div className="storyHeader flex flex-col h-32 w-full bg-gray-300 font-mono py-4">
@@ -55,11 +55,13 @@ class MainScreen extends React.Component {
                     <p className="block lg:text-9xl md:text-6xl sm-text-5xl break-words text-center">Main Menu</p>
                     
                     <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                    <button className="border-black border-2 bg-yellow-500" onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>New Chat</button>
-                    <button className="border-black border-2 bg-yellow-500 " onClick={(e) => fetchChats()}>Get Chats</button>
+                    <button className="border-black border-2 bg-yellow-500"  onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>New Chat</button>
+                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> fetchChats()}>Get Chats</button>
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToProfile()}>Settings</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> chatBot()}>Chat Bot</button> 
-                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> logOut()}>Log Out</button> </span>
+                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToContacts()}>Contacts</button>
+                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> logOut()}>Log Out</button>
+                    </span>
                     <p className="block lg:text-4xl md:text-3xl sm-text-2xl break-words text-right">Friends List Here?</p>
                     <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">Each friend could have a create chat</p>
                     <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">could be able to search for new friends</p>
