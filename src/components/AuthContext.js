@@ -105,7 +105,7 @@ class AuthProvider extends React.Component {
             /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
             }*/
-            this.fetchUser(this.state.user.id)
+            //this.fetchUser(this.state.user.id)
         } catch(error) {
             this.setState({
                 authMessage: error.message
@@ -159,7 +159,7 @@ class AuthProvider extends React.Component {
                 }
                 })       
             })
-           
+           this.fetchChats();
         }
         catch (error) {
             console.log(error)
