@@ -23,7 +23,7 @@ class MainScreen extends React.Component {
         
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, goToProfile}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile}) => (
              <>
              <div className='storyScreen bg-gray-300 h-48'>
              <div className="storyHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
@@ -47,6 +47,7 @@ class MainScreen extends React.Component {
                         )}
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e) => fetchChats()}>Fetch Chats</button>
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToProfile()}>Profile Settings</button> 
+                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> chatBot()}>Chat Bot</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> logOut()}>Log Out</button> </span>
                     <span text-center>Will update button appearance eventually, and get it to fetch the chats automatically</span>
                     </div>
