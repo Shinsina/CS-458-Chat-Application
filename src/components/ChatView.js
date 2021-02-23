@@ -3,6 +3,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
 import {AuthConsumer} from './AuthContext'
 import { chatsRef } from '../firebase';
+import BotView from './BotView';
   
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -44,6 +45,14 @@ class ChatView extends React.Component {
         chatsRef.doc(this.state.chatId).update({
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
         })
+
+        var comment = this.state.content.toLowerCase();
+        var parse = comment.includes("!help");
+        if (parse === true) {
+            alert("How can I help you? this still a work in progress")
+        }
+
+
       }
 
     fetchMessages = async chatId => {
@@ -52,6 +61,7 @@ class ChatView extends React.Component {
             const doc = await chat.get();
             //console.log(doc.data().messages)
             this.setState({messages: doc.data().chat.messages})
+           //
         }
         catch(error) {
             console.log(error)
