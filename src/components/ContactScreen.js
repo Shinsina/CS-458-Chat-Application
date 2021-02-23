@@ -11,21 +11,30 @@ class ContactScreen extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            currentUser: '',
-            contacts: []
-        }
-
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     render() {
         return (
-        <AuthConsumer>
-        {({user}) => (<></>)}
-        </AuthConsumer>
-        )
+            <AuthConsumer>{
+                <>
+                {({userInfo}) => (
+                    <>
+                    <h1><b>Contacts:</b></h1>
+            
+                    {Object.keys(userInfo.contactList).map(k => 
+                    <div key={k}><h3>
+                    <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(userInfo.contactList[k])}>
+                        {userInfo.contactList[k].displayName}
+                    </button>
+                    </h3></div>
+                    
+                    )}
+                    </>
+                )}
+                </>
+            }</AuthConsumer>)
     }
 }
 
