@@ -60,7 +60,9 @@ class MainScreen extends React.Component {
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToProfile()}>Settings</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> chatBot()}>Chat Bot</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> logOut()}>Log Out</button> </span>
-                    <br/>
+                    <p className="block lg:text-4xl md:text-3xl sm-text-2xl break-words text-right">Friends List Here?</p>
+                    <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">Each friend could have a create chat</p>
+                    <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">could be able to search for new friends</p>
                     <p className="block lg:text-7xl md:text-4xl sm-text-3xl break-words text-left">Chats</p>
                     <br/>
                     <span className="FormHeader block text-left text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
