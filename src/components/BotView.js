@@ -33,7 +33,7 @@ class BotView extends React.Component {
                     </div>
                     <div> <br></br>
                         <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.parse() }>IDK</button></span>
+                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => "" }>IDK</button></span>
                         
 
                     </div>
