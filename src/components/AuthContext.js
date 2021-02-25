@@ -233,6 +233,7 @@ class AuthProvider extends React.Component {
                 goToProfile: this.goToProfile,
                 goToContacts: this.goToContacts,
                 chatBot: this.chatBot,
+                fetchUser: this.fetchUser
                 }}>
                 {this.props.children}
             </AuthContext.Provider>
