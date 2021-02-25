@@ -19,17 +19,16 @@ class ProfileScreen extends React.Component {
         })
     }
 
-    updateDbStatus = async (chatter) => {
+    updateDbStatus = async (chatter, userFetch) => {
         try {
             const currentUser = await usersRef
             .where('user.uniqueId', '==', chatter.uniqueId)
             .get()
             currentUser.forEach(doc => {
-                const statusRef = usersRef.doc(doc.id)
-                console.log(statusRef)
-                statusRef.update({'user.activityStatus': this.statusInput.current.value})
-                
+                //console.log(doc.id)
+                usersRef.doc(doc.id).update({'user.activityStatus': this.state.status})
             })
+            userFetch(chatter.uniqueId)
         }
         catch (error) {
             console.log(error)
@@ -41,11 +40,8 @@ class ProfileScreen extends React.Component {
             isInEditMode: false,
             status: this.statusInput.current.value
         })
-        console.log(chatter.activityStatus)
-        this.updateDbStatus(chatter)
-        userFetch(chatter.uniqueId)
-
-
+        //console.log(chatter.activityStatus)
+        this.updateDbStatus(chatter,userFetch)
     }
 
     renderEditView = (chatter, userFetch) => {
