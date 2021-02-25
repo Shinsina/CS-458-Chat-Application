@@ -4,6 +4,7 @@ import ReactHtmlParser from 'react-html-parser';
 import {AuthConsumer} from './AuthContext'
 import { chatsRef } from '../firebase';
 import BotView from './BotView';
+import timezone from '../timezone'
   
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -17,16 +18,78 @@ class ChatView extends React.Component {
             content: '',
             messages: [],
             schedulingMessage: false,
-            months: ['January','February','March','April','May','June','July','August','September','October','November', 'December']
+            months: ['January','February','March','April','May','June','July','August','September','October','November', 'December'],
+            days: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+            years: ['2021','2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
+            hours: ['1','2','3','4','5','6','7','8','9','10','11','12'],
+            minutes:['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
+            seconds: ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
+            AMorPM: ['AM','PM'],
+            timezones: timezone
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        //console.log(this.state.timezone)
     }
 
     componentDidMount(){
         this.setState({chatId: this.props.match.params.chatId})
         //console.log(this.state.chatId)
         this.fetchMessages(this.props.match.params.chatId)
+    }
+    componentDidUpdate(){
+        if(this.state.schedulingMessage){
+        const monthList = document.getElementById('month')
+        const dayList = document.getElementById('day')
+        const yearList = document.getElementById('year')
+        const hourList = document.getElementById('hour')
+        const minuteList = document.getElementById('minute')
+        const secondList = document.getElementById('second') 
+        const AMorPMList = document.getElementById('AMorPM')
+        const timezoneList = document.getElementById('timezone')
+
+        this.state.months.forEach(month =>
+            monthList.add(
+                new Option(month, month)
+            )
+            )
+        this.state.days.forEach(day =>
+            dayList.add(
+                new Option(day, day)
+            )
+            )
+        this.state.years.forEach(year =>
+            yearList.add(
+                new Option(year, year)
+            )
+            )
+        this.state.hours.forEach(hour =>
+            hourList.add(
+                new Option(hour, hour)
+            )
+            )
+        this.state.minutes.forEach(minute =>
+            minuteList.add(
+                new Option(minute, minute)
+            )
+            )
+        this.state.seconds.forEach(second =>
+            secondList.add(
+                new Option(second, second)
+            )
+            )
+        this.state.AMorPM.forEach(AMorPM =>
+            AMorPMList.add(
+                new Option(AMorPM, AMorPM)
+            )
+            )
+        this.state.timezones.forEach(timezone =>
+            timezoneList.add(
+                new Option(timezone.name, timezone.name)
+            )
+            )    
+            
+        }
     }
     handleChange(content, editor) {
         this.setState({content});
@@ -122,6 +185,9 @@ class ChatView extends React.Component {
 
                     </select>
                     <select id="second">
+
+                    </select>
+                    <select id="AMorPM">
 
                     </select>
                     <select id="timezone">
