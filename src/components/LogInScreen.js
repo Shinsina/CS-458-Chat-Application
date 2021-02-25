@@ -30,7 +30,7 @@ class LogInScreen extends React.Component {
     render() {
     return (
         <AuthConsumer>
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat}) => (
+            {({signUp, logIn, user, authMessage}) => (
                 <>
                 {!user.id ? (
                     <div className='signUpForm bg-gray-500 h-screen'>
