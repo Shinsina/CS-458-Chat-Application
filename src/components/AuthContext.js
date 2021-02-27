@@ -102,6 +102,7 @@ class AuthProvider extends React.Component {
                 email,
                 password
             )
+            //console.log(this.state.user.id)
             /*if(window.confirm("Would you like to be redirected to your profile?")) {
                 this.props.history.push(`/${this.state.user.id}/profile`)
             }*/
@@ -114,6 +115,7 @@ class AuthProvider extends React.Component {
     }
     logOut = () => {
         try {
+            this.setOfflineStatus()
             firebaseAuth.signOut()
             this.setState ({
                 user: {},
@@ -125,6 +127,19 @@ class AuthProvider extends React.Component {
             this.setState({
                 authMessage: error.messages
             })
+        }
+    }
+
+    setOfflineStatus = async () => {
+        try {
+            const currentUser = await usersRef
+            .where('user.uniqueId','==', this.state.user.id)
+            .get()
+            currentUser.forEach(doc => {
+                usersRef.doc(doc.id).update({'user.onlineStatus': false})
+            })
+        } catch(error) {
+            console.log(error)
         }
     }
 
@@ -157,7 +172,8 @@ class AuthProvider extends React.Component {
                     onlineStatus: true,
                     activityStatus: doc.data().user.activityStatus,
                 }
-                })       
+                })
+                usersRef.doc(doc.id).update({'user.onlineStatus': true})       
             })
            this.fetchChats();
         }
@@ -193,7 +209,7 @@ class AuthProvider extends React.Component {
               this.setState({userChats: [...this.state.userChats, doc.id]})
             }
         })
-        console.log(this.state.userChats)
+        //console.log(this.state.userChats)
         }
         catch(error) {
             console.log(error)

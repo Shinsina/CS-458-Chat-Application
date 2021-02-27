@@ -18,12 +18,12 @@ class ChatView extends React.Component {
             content: '',
             messages: [],
             schedulingMessage: false,
-            months: ['January','February','March','April','May','June','July','August','September','October','November', 'December'],
-            days: ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
+            months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov', 'Dec'],
+            days: ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
             years: ['2021','2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
-            hours: ['1','2','3','4','5','6','7','8','9','10','11','12'],
-            minutes:['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
-            seconds: ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
+            hours: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+            minutes:['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
+            seconds: ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
             AMorPM: ['AM','PM'],
             timezones: timezone
         }
@@ -85,7 +85,7 @@ class ChatView extends React.Component {
             )
         this.state.timezones.forEach(timezone =>
             timezoneList.add(
-                new Option(timezone.name, timezone.name)
+                new Option(timezone.value, timezone.abbr)
             )
             )    
             
@@ -136,23 +136,44 @@ class ChatView extends React.Component {
     scheduleMessage = async () => {
         try  {
             let sent = false
-            while (!sent) {
-                let scheduledTime = prompt('When should this message be sent? (Date should be of form MM/DD/YYYY HH:MM:SS (Timezone)', Date().toString())
-                if (scheduledTime !== null) {
-                const parseDate = Date.parse(scheduledTime)
-                const setDate = new Date(parseDate)
-                console.log(setDate)
-                if (setDate == 'Invalid Date') {
+            //while (!sent) {
+                //const test = prompt('When should this message be sent? (Date should be of form MM/DD/YYYY HH:MM:SS (Timezone)', Date().toString())
+                
+                const currentMonth = document.getElementById("month")
+                const currentDay = document.getElementById("day")
+                const currentYear = document.getElementById("year")
+                const currentHour = document.getElementById("hour")
+                const currentMinute = document.getElementById("minute")
+                const currentSecond = document.getElementById("second")
+                const currentAMorPM = document.getElementById("AMorPM")
+                const currentTimezone = document.getElementById("timezone")
+                console.log(currentMonth.value)
+                console.log(currentDay.value)
+                console.log(currentYear.value)
+                console.log(currentHour.value)
+                console.log(currentMinute.value)
+                console.log(currentSecond.value)
+                console.log(currentAMorPM.value)
+                console.log(currentTimezone.value)
+                const event = new Date('14 Jun 2017 00:00:00 PDT');
+                console.log(event.toUTCString());
+                const dateString = currentDay.value +  ' ' + currentMonth.value + ' ' + currentYear.value + ' ' + currentHour.value + ':' + currentMinute.value + ':' + currentSecond.value + ' ' +  '' + currentTimezone.value + ''
+                console.log(dateString)
+                const formattedDate = new Date(dateString)
+                console.log(formattedDate);
+                console.log(new Date())
+                //console.log(dateString.toISOString());
+                //const parseDate = Date.parse(dateString)
+                //const setDate = new Date(parseDate).toUTCString()
+                //console.log(setDate)
+                //console.log(Date().toUTCString())
+                /*if (setDate == 'Invalid Date') {
                     sent = false;
                 }
                 else {
                     sent = true;
-                }
-            }
-            else {
-                sent = true;
-            }
-            }
+                }*/
+            //}
         } catch (error) {
 
         }
@@ -169,6 +190,7 @@ class ChatView extends React.Component {
             <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatId}</p></div>
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
+                    <div>{ReactHtmlParser(this.state.content)}</div>
                     <select id="month">
 
                     </select>
@@ -193,6 +215,8 @@ class ChatView extends React.Component {
                     <select id="timezone">
 
                     </select>
+                    <br/>
+                    <button className="" type="button" onClick={(e) => this.scheduleMessage()}>Schedule This Message</button>
                 </form>
             ) : (
             <div className="h-full overflow-y-scroll">
@@ -214,7 +238,7 @@ class ChatView extends React.Component {
             </div>
     )}
             <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
-            <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-1/2" type="submit">Submit</button><button className="w-1/2" type="button" onClick={(e) => this.setState({schedulingMessage: true})}>Schedule This Message</button></span>
+            <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-1/2" type="submit">Submit</button><button className="w-1/2" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage})}>Schedule This Message</button></span>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
              'advlist autolink lists link image charmap print preview anchor',
              'searchreplace visualblocks code fullscreen',
