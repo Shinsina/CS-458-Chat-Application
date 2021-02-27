@@ -4,7 +4,6 @@ import ReactHtmlParser from 'react-html-parser';
 import {AuthConsumer} from './AuthContext'
 import { chatsRef } from '../firebase';
 import BotView from './BotView';
-import timezone from '../timezone'
   
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -21,11 +20,11 @@ class ChatView extends React.Component {
             months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov', 'Dec'],
             days: ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31'],
             years: ['2021','2022','2023','2024','2025','2026','2027','2028','2029','2030','2031','2032','2033','2034','2035','2036','2037','2038','2039','2040','2041','2042','2043','2044','2045','2046','2047','2048','2049','2050'],
-            hours: ['01','02','03','04','05','06','07','08','09','10','11','12'],
+            hours: ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],
             minutes:['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
             seconds: ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
-            AMorPM: ['AM','PM'],
-            timezones: timezone
+            timezones: ['EST', 'CST', 'MST', 'PST'],
+            updateCount: 0
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,15 +36,14 @@ class ChatView extends React.Component {
         //console.log(this.state.chatId)
         this.fetchMessages(this.props.match.params.chatId)
     }
-    componentDidUpdate(){
-        if(this.state.schedulingMessage){
+    componentDidUpdate(){    
+        if(this.state.schedulingMessage && this.state.updateCount === 0){
         const monthList = document.getElementById('month')
         const dayList = document.getElementById('day')
         const yearList = document.getElementById('year')
         const hourList = document.getElementById('hour')
         const minuteList = document.getElementById('minute')
         const secondList = document.getElementById('second') 
-        const AMorPMList = document.getElementById('AMorPM')
         const timezoneList = document.getElementById('timezone')
 
         this.state.months.forEach(month =>
@@ -78,34 +76,29 @@ class ChatView extends React.Component {
                 new Option(second, second)
             )
             )
-        this.state.AMorPM.forEach(AMorPM =>
-            AMorPMList.add(
-                new Option(AMorPM, AMorPM)
-            )
-            )
         this.state.timezones.forEach(timezone =>
             timezoneList.add(
-                new Option(timezone.value, timezone.abbr)
+                new Option(timezone, timezone)
             )
-            )    
-            
-        }
+            )      
+        }   
     }
     handleChange(content, editor) {
         this.setState({content});
       }
-    handleSubmit = (e,chatter) => {
+    handleSubmit = (e,chatter,timeToSend = new Date()) => {
         e.preventDefault();
+        console.log('YES')
         const message = {
             content: this.state.content,
             postingUser: chatter.displayName,
             userImage: chatter.profilePicture, 
             userId: chatter.uniqueId,
-            createdAt: new Date(),
+            createdAt: timeToSend,
             unread: true,
             chatId: this.state.chatId
         }
-        this.setState({messages: [...this.state.messages, message]})
+        this.setState({messages: [...this.state.messages, message],content: ''})
         //chatsRef.add({message})
         chatsRef.doc(this.state.chatId).update({
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
@@ -133,50 +126,43 @@ class ChatView extends React.Component {
         }
     }
 
-    scheduleMessage = async () => {
-        try  {
-            let sent = false
+    scheduleMessage = (e,chatter) => {
+            //let sent = false
             //while (!sent) {
                 //const test = prompt('When should this message be sent? (Date should be of form MM/DD/YYYY HH:MM:SS (Timezone)', Date().toString())
-                
                 const currentMonth = document.getElementById("month")
                 const currentDay = document.getElementById("day")
                 const currentYear = document.getElementById("year")
                 const currentHour = document.getElementById("hour")
                 const currentMinute = document.getElementById("minute")
                 const currentSecond = document.getElementById("second")
-                const currentAMorPM = document.getElementById("AMorPM")
                 const currentTimezone = document.getElementById("timezone")
-                console.log(currentMonth.value)
+                /*console.log(currentMonth.value)
                 console.log(currentDay.value)
                 console.log(currentYear.value)
                 console.log(currentHour.value)
                 console.log(currentMinute.value)
                 console.log(currentSecond.value)
-                console.log(currentAMorPM.value)
                 console.log(currentTimezone.value)
                 const event = new Date('14 Jun 2017 00:00:00 PDT');
-                console.log(event.toUTCString());
+                console.log(event.toUTCString());*/
                 const dateString = currentDay.value +  ' ' + currentMonth.value + ' ' + currentYear.value + ' ' + currentHour.value + ':' + currentMinute.value + ':' + currentSecond.value + ' ' +  '' + currentTimezone.value + ''
-                console.log(dateString)
+                //console.log(dateString)
                 const formattedDate = new Date(dateString)
-                console.log(formattedDate);
-                console.log(new Date())
-                //console.log(dateString.toISOString());
-                //const parseDate = Date.parse(dateString)
-                //const setDate = new Date(parseDate).toUTCString()
-                //console.log(setDate)
-                //console.log(Date().toUTCString())
-                /*if (setDate == 'Invalid Date') {
-                    sent = false;
+                const currentDate = new Date()
+                //console.log(formattedDate);
+                //console.log(currentDate)
+                if(formattedDate < currentDate){
+                    alert('You can\'t schedule a message into the past!')
+                }
+                else if (this.state.content === ''){
+                    alert('The message is empty!')
                 }
                 else {
-                    sent = true;
-                }*/
-            //}
-        } catch (error) {
-
-        }
+                    //alert('Message Sent!')
+                    this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: this.state.updateCount++})
+                    this.handleSubmit(e,chatter,formattedDate)
+                }
     }
       
     render () {
@@ -191,37 +177,19 @@ class ChatView extends React.Component {
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
                     <div>{ReactHtmlParser(this.state.content)}</div>
-                    <select id="month">
-
-                    </select>
-                    <select id="day">
-
-                    </select>
-                    <select id="year">
-
-                    </select>
-                    <select id="hour">
-
-                    </select>
-                    <select id="minute">
-
-                    </select>
-                    <select id="second">
-
-                    </select>
-                    <select id="AMorPM">
-
-                    </select>
-                    <select id="timezone">
-
-                    </select>
+                    <select id="month"></select>
+                    <select id="day"></select>
+                    <select id="year"></select>
+                    <select id="hour"></select>
+                    <select id="minute"></select>
+                    <select id="second"></select>
+                    <select id="timezone"></select>
                     <br/>
-                    <button className="" type="button" onClick={(e) => this.scheduleMessage()}>Schedule This Message</button>
+                    <button className="" type="button" onClick={(e) => this.scheduleMessage(e,userInfo)}>Send Scheduled Message</button>
                 </form>
             ) : (
             <div className="h-full overflow-y-scroll">
             {Object.keys(this.state.messages).map(key => 
-                
                 <div key={key}>
                     {this.state.messages[key].userId === userInfo.uniqueId ? (
                     <div className="flex justify-end py-4">
