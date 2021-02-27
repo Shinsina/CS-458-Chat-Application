@@ -105,6 +105,7 @@ class ChatView extends React.Component {
         }
         this.setState({messages: [...this.state.messages, message],content: ''})
         //chatsRef.add({message})
+        this.fetchMessages(this.state.chatId,true)
         chatsRef.doc(this.state.chatId).update({
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
         })
@@ -120,7 +121,7 @@ class ChatView extends React.Component {
     }
       }
 
-    fetchMessages = async chatId => {
+    fetchMessages = async (chatId, updatingMessages = false) => {
         try {
             const chat = chatsRef.doc(chatId);
             const doc = await chat.get();
@@ -142,13 +143,16 @@ class ChatView extends React.Component {
                     //console.log(this.state.firstUnreadMessage)
                 }
                 iterator++
-            }            
+            }
+            //console.log(updatingMessages)
+            if(updatingMessages===false){            
             const goToFirstUnread = window.confirm("Would you like to go to the first unread message?")
             this.setState({rootUrl: this.state.rootUrl.match(/[^#]*/)[0]})
             if (goToFirstUnread) {
                 //console.log(this.state.rootUrl)
                 window.location.href=this.state.rootUrl + this.state.firstUnreadMessage
             }
+        }
         }
         catch(error) {
             console.log(error)
