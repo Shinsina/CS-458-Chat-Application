@@ -7,6 +7,7 @@ import BotView from './BotView';
   
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { wait } from '@testing-library/react';
 
 class ChatView extends React.Component {
     constructor(props) {
@@ -24,7 +25,9 @@ class ChatView extends React.Component {
             minutes:['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
             seconds: ['00','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31', '32', '33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59'],
             timezones: ['EST', 'CST', 'MST', 'PST'],
-            updateCount: 0
+            updateCount: 0,
+            firstUnreadMessage: null,
+            rootUrl: ''
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -32,9 +35,11 @@ class ChatView extends React.Component {
     }
 
     componentDidMount(){
-        this.setState({chatId: this.props.match.params.chatId})
+        this.setState({chatId: this.props.match.params.chatId, rootUrl: window.location.href})
         //console.log(this.state.chatId)
+        //console.log(this.state.rootUrl)
         this.fetchMessages(this.props.match.params.chatId)
+        
     }
     componentDidUpdate(){    
         if(this.state.schedulingMessage && this.state.updateCount === 0){
@@ -88,7 +93,7 @@ class ChatView extends React.Component {
       }
     handleSubmit = (e,chatter,timeToSend = new Date()) => {
         e.preventDefault();
-        console.log('YES')
+        try {
         const message = {
             content: this.state.content,
             postingUser: chatter.displayName,
@@ -109,8 +114,10 @@ class ChatView extends React.Component {
         if (parse === true) {
             alert("How can I help you? this still a work in progress")
         }
-
-
+    } catch(error) {
+        console.log(error)
+        alert('Message failed to send')
+    }
       }
 
     fetchMessages = async chatId => {
@@ -119,7 +126,29 @@ class ChatView extends React.Component {
             const doc = await chat.get();
             //console.log(doc.data().messages)
             this.setState({messages: doc.data().chat.messages})
-           //
+            const messageArea = document.getElementById("messageArea");
+            messageArea.scrollTop = messageArea.scrollHeight;
+            //console.log(this.state.messages)
+            //console.log(this.props.match.params.userId)
+            let firstUnread = null
+            let iterator = 0
+            while(firstUnread==null && iterator<=this.state.messages.length){
+                //console.log(this.state.messages[iterator])
+                if(this.state.messages[iterator].unread==true && this.state.messages[iterator].userId !== this.props.match.params.userId){
+                    firstUnread = iterator
+                    //console.log(firstUnread)
+                    this.setState({firstUnreadMessage: '#'+firstUnread})
+                    //console.log(this.state.firstUnreadMessage)
+                    //console.log(this.state.firstUnreadMessage)
+                }
+                iterator++
+            }            
+            const goToFirstUnread = window.confirm("Would you like to go to the first unread message?")
+            this.setState({rootUrl: this.state.rootUrl.match(/[^#]*/)[0]})
+            if (goToFirstUnread) {
+                //console.log(this.state.rootUrl)
+                window.location.href=this.state.rootUrl + this.state.firstUnreadMessage
+            }
         }
         catch(error) {
             console.log(error)
@@ -127,9 +156,7 @@ class ChatView extends React.Component {
     }
 
     scheduleMessage = (e,chatter) => {
-            //let sent = false
-            //while (!sent) {
-                //const test = prompt('When should this message be sent? (Date should be of form MM/DD/YYYY HH:MM:SS (Timezone)', Date().toString())
+                this.setState({updateCount: this.state.updateCount++})
                 const currentMonth = document.getElementById("month")
                 const currentDay = document.getElementById("day")
                 const currentYear = document.getElementById("year")
@@ -160,7 +187,7 @@ class ChatView extends React.Component {
                 }
                 else {
                     //alert('Message Sent!')
-                    this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: this.state.updateCount++})
+                    this.setState({schedulingMessage: !this.state.schedulingMessage})
                     this.handleSubmit(e,chatter,formattedDate)
                 }
     }
@@ -188,19 +215,32 @@ class ChatView extends React.Component {
                     <button className="" type="button" onClick={(e) => this.scheduleMessage(e,userInfo)}>Send Scheduled Message</button>
                 </form>
             ) : (
-            <div className="h-full overflow-y-scroll">
+            <div className="h-full overflow-y-scroll" id="messageArea">
             {Object.keys(this.state.messages).map(key => 
-                <div key={key}>
+                <div key={key} id={key}>
+                    {new Date(this.state.messages[key].createdAt.seconds * 1000) < new Date() ? (
+                    <>
                     {this.state.messages[key].userId === userInfo.uniqueId ? (
                     <div className="flex justify-end py-4">
-                    <div className="bg-yellow-500">{ReactHtmlParser(this.state.messages[key].content)}</div>
+                    {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
+                    <div className="bg-yellow-500">
+                        {this.state.messages[key].postingUser}
+                        {ReactHtmlParser(this.state.messages[key].content)}
+                    </div>
+                    <button><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
                     </div>) 
                     : (
                     <div className="flex justify-start py-4">
-                    <div className="bg-green-500">{ReactHtmlParser(this.state.messages[key].content)}</div>
+                    <button><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
+                    <div className="bg-green-500">
+                        {this.state.messages[key].postingUser}
+                        {ReactHtmlParser(this.state.messages[key].content)}    
+                    </div>
+                    {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
                     </div>
                     )}
-                    
+                    </>
+                    ) : (console.log(new Date(this.state.messages[key].createdAt.seconds * 1000)))}
                 </div>
                 )}
             </div>
@@ -218,6 +258,7 @@ class ChatView extends React.Component {
             onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>
             </form>
+            <a href={this.state.firstUnreadMessage}>HELLO</a>
             </div>
             </div>
             </>
