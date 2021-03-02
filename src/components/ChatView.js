@@ -231,7 +231,7 @@ class ChatView extends React.Component {
         return (
             
             <AuthConsumer>
-            {({userInfo})=> (
+            {({userInfo, botInfo})=> (
             <>
             <div className="bg-gray-500 h-screen">
             <div className="h-2/3">
