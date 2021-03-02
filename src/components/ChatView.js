@@ -41,7 +41,8 @@ class ChatView extends React.Component {
         this.fetchMessages(this.props.match.params.chatId)
         
     }
-    componentDidUpdate(){    
+    componentDidUpdate(){
+        console.log(this.state.updateCount)    
         if(this.state.schedulingMessage && this.state.updateCount === 0){
         const monthList = document.getElementById('month')
         const dayList = document.getElementById('day')
@@ -89,6 +90,7 @@ class ChatView extends React.Component {
         }   
     }
     handleChange(content, editor) {
+        this.setState({updateCount: 1})
         this.setState({content});
       }
     handleSubmit = (e,chatter,timeToSend = new Date()) => {
@@ -250,7 +252,7 @@ class ChatView extends React.Component {
             </div>
     )}
             <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
-            <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-1/2" type="submit">Submit</button><button className="w-1/2" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage})}>Schedule This Message</button></span>
+            <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-1/2" type="submit">Submit</button><button className="w-1/2" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button></span>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
              'advlist autolink lists link image charmap print preview anchor',
              'searchreplace visualblocks code fullscreen',
