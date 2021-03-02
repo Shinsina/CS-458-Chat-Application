@@ -39,10 +39,10 @@ class ChatView extends React.Component {
         //console.log(this.state.chatId)
         //console.log(this.state.rootUrl)
         this.fetchMessages(this.props.match.params.chatId)
-        
+        //this.deleteMessage()
     }
     componentDidUpdate(){
-        console.log(this.state.updateCount)    
+        //console.log(this.state.updateCount)    
         if(this.state.schedulingMessage && this.state.updateCount === 0){
         const monthList = document.getElementById('month')
         const dayList = document.getElementById('day')
@@ -197,6 +197,35 @@ class ChatView extends React.Component {
                     this.handleSubmit(e,chatter,formattedDate)
                 }
     }
+
+    deleteMessage = async(messageKey) => {
+        //console.log(messageKey)
+        const confirmation = window.confirm('Are you sure you would like to delete this message?')
+        //console.log(confirmation)
+        if (confirmation) {
+        try {
+           const chatData = await chatsRef.doc(this.props.match.params.chatId).get()
+           const chatRef = chatsRef.doc(chatData.id)
+           //console.log(chatRef)
+           let tempStore = chatData.data().chat.messages
+           let filteredTemp = []
+           chatData.data().chat.messages.forEach((message,index) =>{
+               if(index==messageKey.key){
+                   //console.log(message)
+                   delete tempStore[index]
+                   for(let i of tempStore) {
+                       i && filteredTemp.push(i)
+                   }
+                   tempStore = filteredTemp
+                   chatRef.update({'chat.messages': [...tempStore]})
+               }
+           })
+           this.fetchMessages(this.props.match.params.chatId,true)
+        } catch(error) {
+            console.log(error)
+        }
+    }
+    }
       
     render () {
         return (
@@ -229,7 +258,7 @@ class ChatView extends React.Component {
                     {this.state.messages[key].userId === userInfo.uniqueId ? (
                     <div className="flex justify-end py-4">
                     {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
-                    <div className="bg-yellow-500">
+                    <div className="bg-yellow-500" onClick={(e) => this.deleteMessage({key})}>
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}
                     </div>
