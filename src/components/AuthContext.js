@@ -59,6 +59,7 @@ class AuthProvider extends React.Component {
                 usersRef.add({user})
             } 
             else {
+                
             const uploadTask = storage.ref(`/images/${image.name}`).put(image)
             uploadTask.on('state_changed', 
             (snapShot) => {
@@ -72,6 +73,7 @@ class AuthProvider extends React.Component {
                     //console.log(this.state.imageUrl)
                     //console.log(fireBaseURL)
                 })
+
                 const user = {
                     profilePicture: this.state.imageUrl,
                     displayName: displayName,

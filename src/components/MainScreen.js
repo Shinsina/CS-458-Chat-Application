@@ -1,5 +1,6 @@
 import React from 'react'
 import {AuthConsumer} from './AuthContext'
+import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
 
 /**
  * This class is for the overall main menu screen, including naviagation, a chats section, and a stories section
@@ -37,6 +38,29 @@ class MainScreen extends React.Component {
 
     }
 
+    handleImage = (e) => {
+        e.preventDefault()
+        const image = e.target.files[0]
+        //this.state.imageFile = image;
+        this.setState({imageFile: image})
+
+        //The else of the sign up goes here
+        const uploadTask = storage.ref(`/images/${image.name}`).put(image)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //console.log(snapShot)
+            }, (err) => {
+                //console.log(err)
+            }, async () => {
+                await storage.ref('images').child(image.name).getDownloadURL()
+                .then(fireBaseURL => {
+                    this.state.imageUrl = fireBaseURL
+                    //console.log(this.state.imageUrl)
+                    //console.log(fireBaseURL)
+                })
+            })
+    }
+
     /**
      * The render function ensures the following information is getting on screen
      */
@@ -51,8 +75,9 @@ class MainScreen extends React.Component {
              <div className='storyScreen bg-gray-300 h-32'>
              <div className="storyHeader flex flex-col h-32 w-full bg-gray-300 font-mono py-4">
                     <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">Stories</p>
-                    <span className="FormHeader text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                        <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> <p>"Create Story"</p>}>Create Story</button> </span>
+                    <span className="FormHeader text-left text-black lg:text-3xl md:text-2xl sm:text-xl font-mono">
+                    <label for="myfile">Upload Story: </label>
+                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={this.handleImage}/> </span>
                     </div>
                     </div>
                     {/*The main menu section*/}
