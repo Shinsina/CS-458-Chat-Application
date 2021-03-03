@@ -160,6 +160,7 @@ class ChatView extends React.Component {
                 window.location.href=this.state.rootUrl + this.state.firstUnreadMessage
             }
         }
+        this.markAsRead()
         }
         catch(error) {
             console.log(error)
@@ -231,7 +232,23 @@ class ChatView extends React.Component {
         }
     }
     }
-
+    markAsRead = async() => {
+        try {
+            const chatData = await chatsRef.doc(this.props.match.params.chatId).get()
+            const chatRef = chatsRef.doc(chatData.id)
+            let tempStore = chatData.data().chat.messages
+            let filteredTemp = []
+            chatData.data().chat.messages.forEach((message,index) => {
+                if(message.unread == true && message.userId !== this.props.match.params.userId) {
+                    tempStore[index].unread = false
+                }
+            })
+            chatRef.update({'chat.messages': [...tempStore]})
+            this.fetchMessages(this.props.match.params.chatId,true)
+        } catch(error) {
+            console.log(error)
+        }
+    }
     uploadMedia = (media) =>{ 
         const uploadTask = storage.ref(`/images/${media.name}`).put(media)
             uploadTask.on('state_changed', 
