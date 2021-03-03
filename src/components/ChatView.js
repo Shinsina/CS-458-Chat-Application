@@ -237,9 +237,9 @@ class ChatView extends React.Component {
             const chatData = await chatsRef.doc(this.props.match.params.chatId).get()
             const chatRef = chatsRef.doc(chatData.id)
             let tempStore = chatData.data().chat.messages
-            let filteredTemp = []
             chatData.data().chat.messages.forEach((message,index) => {
-                if(message.unread == true && message.userId !== this.props.match.params.userId) {
+                if(message.unread == true && message.userId !== this.props.match.params.userId && new Date(message.createdAt.seconds * 1000) < new Date()) {
+                    //console.log(message)
                     tempStore[index].unread = false
                 }
             })
