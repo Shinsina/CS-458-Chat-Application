@@ -15,15 +15,15 @@ class AuthProvider extends React.Component {
         userInfo: {},
         userChats: [],
         botInfo: {
-                    profilePicture: "https://firebasestorage.googleapis.com/v0/b/chat-app-8b206.appspot.com/o/images%2Favatardefault_92824.png?alt=media&token=716c8089-4bbe-4e41-96bb-80e1d336a815",
-                    displayName: "Waffle Cone",
-                    uniqueId: "jDODSSntxgPUk1awehVq2XmJGGv2",
-                    contactList: [],
-                    blockList: [],
-                    darkMode: true,
-                    locationTracking: false,
-                    onlineStatus: true,
-                    activityStatus: "",
+            profilePicture: "https://firebasestorage.googleapis.com/v0/b/chat-app-8b206.appspot.com/o/images%2Favatardefault_92824.png?alt=media&token=716c8089-4bbe-4e41-96bb-80e1d336a815",
+            displayName: "Waffle Cone",
+            uniqueId: "jDODSSntxgPUk1awehVq2XmJGGv2",
+            contactList: [],
+            blockList: [],
+            darkMode: true,
+            locationTracking: false,
+            onlineStatus: true,
+            activityStatus: "",
         }
     }
 

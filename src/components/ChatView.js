@@ -2,7 +2,7 @@ import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
 import {AuthConsumer} from './AuthContext'
-import { chatsRef } from '../firebase';
+import { chatsRef, usersRef, storage} from '../firebase';
 import BotView from './BotView';
   
 import firebase from 'firebase/app';
@@ -27,7 +27,10 @@ class ChatView extends React.Component {
             timezones: ['EST', 'CST', 'MST', 'PST'],
             updateCount: 0,
             firstUnreadMessage: null,
-            rootUrl: ''
+            rootUrl: '',
+            mediaFile: null,
+            otherChatters: [],
+            chatHeader: ''
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,9 +39,11 @@ class ChatView extends React.Component {
 
     componentDidMount(){
         this.setState({chatId: this.props.match.params.chatId, rootUrl: window.location.href})
+        this.fetchChatHeader()
         //console.log(this.state.chatId)
         //console.log(this.state.rootUrl)
         this.fetchMessages(this.props.match.params.chatId)
+        //console.log(this.state.chatHeader)
         //this.deleteMessage()
     }
     componentDidUpdate(){
@@ -226,16 +231,69 @@ class ChatView extends React.Component {
         }
     }
     }
+
+    uploadMedia = (media) =>{ 
+        const uploadTask = storage.ref(`/images/${media.name}`).put(media)
+            uploadTask.on('state_changed', 
+            (snapShot) => {
+                //console.log(snapShot)
+            }, (err) => {
+                //console.log(err)
+            }, async () => {
+                await storage.ref('images').child(media.name).getDownloadURL()
+                .then(fireBaseURL => {
+                    //this.state.imageUrl = fireBaseURL
+                    //console.log(this.state.imageUrl)
+                    alert('Use the following URL to put your media item in a message: ' + fireBaseURL)
+                })
+            })
+    }
+
+    handleImage = (e) => {
+        e.preventDefault()
+        const media = e.target.files[0]
+        //this.state.imageFile = image;
+        //console.log(image)
+        this.setState({mediaFile: media})
+        //console.log(this.state.imageFile)
+    }
+
+    fetchChatHeader = async () => {
+        const chat = await chatsRef.doc(this.props.match.params.chatId).get()
+        //console.log(test.data().chat.chatters)
+        const currentChatters = chat.data().chat.chatters
+        //console.log(currentChatters)
+        currentChatters.forEach(chatter => {
+            if(chatter !== this.props.match.params.userId && chatter !== "jDODSSntxgPUk1awehVq2XmJGGv2"){
+                this.setState({otherChatters: [...this.state.otherChatters, chatter]})
+                //console.log(this.state.otherChatters)
+            }
+        })
+        await this.fetchDisplayNames()
+    }
+
+    fetchDisplayNames = async () => {
+            try {
+            const userRef = await usersRef.get()
+            userRef.forEach(doc => {
+                if (this.state.otherChatters.toString().includes(doc.data().user.uniqueId)) {
+                    this.setState({chatHeader: this.state.chatHeader + doc.data().user.displayName + ' '})
+                }
+            })
+            }
+            catch (error) {
+                console.log(error)
+            }
+    }
       
     render () {
         return (
-            
             <AuthConsumer>
             {({userInfo, botInfo})=> (
             <>
             <div className="bg-gray-500 h-screen">
             <div className="h-2/3">
-            <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatId}</p></div>
+            <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatHeader}</p></div>
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
                     <div>{ReactHtmlParser(this.state.content)}</div>
@@ -281,7 +339,14 @@ class ChatView extends React.Component {
             </div>
     )}
             <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
-            <span className="block text-center w-full bg-yellow-500 text-black"><button className="w-1/2" type="submit">Submit</button><button className="w-1/2" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button></span>
+            <div className="align-center text-center w-full bg-yellow-500 text-black border-black box-border border-2">
+                <button className="w-1/3" type="submit">Submit</button>
+                <span className="w-1/3" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
+                    {this.state.mediaFile !== null ? (<button onClick={(e) => this.uploadMedia(this.state.mediaFile)} type="button">Upload</button>) : (<></>)}
+                </span>
+                <button className="w-1/3" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
+            </div>
+            
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
              'advlist autolink lists link image charmap print preview anchor',
              'searchreplace visualblocks code fullscreen',
@@ -293,7 +358,6 @@ class ChatView extends React.Component {
             onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>
             </form>
-            <a href={this.state.firstUnreadMessage}>HELLO</a>
             </div>
             </div>
             </>
