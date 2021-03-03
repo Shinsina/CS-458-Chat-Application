@@ -142,7 +142,7 @@ class ChatView extends React.Component {
             let iterator = 0
             while(firstUnread==null && iterator<=this.state.messages.length){
                 //console.log(this.state.messages[iterator])
-                if(this.state.messages[iterator].unread==true && this.state.messages[iterator].userId !== this.props.match.params.userId){
+                if(this.state.messages[iterator].unread==true && this.state.messages[iterator].userId !== this.props.match.params.userId && new Date(this.state.messages[iterator].createdAt.seconds * 1000) < new Date()){
                     firstUnread = iterator
                     //console.log(firstUnread)
                     this.setState({firstUnreadMessage: '#'+firstUnread})
