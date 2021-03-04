@@ -303,6 +303,10 @@ class ChatView extends React.Component {
             }
     }
       
+    fetchUserProfile = (userId) => {
+        this.props.history.push(`/ProfileScreen/${userId}`)
+    }
+
     render () {
         return (
             <AuthConsumer>
@@ -337,11 +341,11 @@ class ChatView extends React.Component {
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}
                     </div>
-                    <button><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
+                    <button onClick={(e)=> this.fetchUserProfile(userInfo.uniqueId)}><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
                     </div>) 
                     : (
                     <div className="flex justify-start py-4">
-                    <button><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
+                    <button onClick={(e)=> this.fetchUserProfile(this.state.messages[key].userId)}><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
                     <div className="bg-green-500">
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}    
