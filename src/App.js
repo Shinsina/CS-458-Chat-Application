@@ -17,9 +17,9 @@ function App() {
     <AuthProvider>
     <Switch> 
     <Route exact path="/" component={LogInScreen}/>
-    <Route exact path="/:userId/:chatId" component={ChatView}/>
+    <Route exact path="/Chat/:userId/:chatId" component={ChatView}/>
     <Route exact path="/mainMenu" component={MainScreen}/>
-    <Route exact path="/ProfileScreen" component={ProfileScreen}/>
+    <Route exact path="/ProfileScreen/:userId" component={ProfileScreen}/>
     <Route exact path="/BotView" component={BotView}/>
     <Route exact path="/Contacts" component={ContactScreen}/>
     </Switch>

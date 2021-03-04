@@ -231,11 +231,11 @@ class AuthProvider extends React.Component {
     }
 
     goToChat = (chatId) => {
-        this.props.history.push(`/${this.state.user.id}/${chatId}`)
+        this.props.history.push(`/Chat/${this.state.user.id}/${chatId}`)
     }
 
     goToProfile = () => {
-        this.props.history.push(`/ProfileScreen`)
+        this.props.history.push(`/ProfileScreen/${this.state.user.id}`)
     }
 
     goToContacts = () => {
