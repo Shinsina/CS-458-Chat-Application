@@ -69,7 +69,7 @@ class MainScreen extends React.Component {
     return (
         <AuthConsumer>
             {/*Provides the needed information to use later on*/}
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo}) => (
              <>
              {/*The stories section of the page, differentiated appearance*/}
              <div className='storyScreen bg-gray-300 h-32'>
@@ -88,16 +88,12 @@ class MainScreen extends React.Component {
                     <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
                         {/*All of the buttons used for naviagtion*/}
                     <button className="border-black border-2 bg-yellow-500"  onClick={(e)=> createChat("N8kGtE5uqcgQVfHycKUuTuSU1uI3")}>New Chat</button>
-                    <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> fetchChats()}>Get Chats</button>
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToProfile()}>Settings</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> chatBot()}>Chat Bot</button> 
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> goToContacts()}>Contacts</button>
                     <button className="border-black border-2 bg-yellow-500 " onClick={(e)=> logOut()}>Log Out</button>
                     </span>
                     {/*Possible section for the friends, and also the chats section*/}
-                    <p className="block lg:text-4xl md:text-3xl sm-text-2xl break-words text-right">Friends List Here?</p>
-                    <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">Each friend could have a create chat</p>
-                    <p className="block lg:text-2xl md:text-2xl sm-text-1xl break-words text-right">could be able to search for new friends</p>
                     <p className="block lg:text-7xl md:text-4xl sm-text-3xl break-words text-left">Chats</p>
                     <br/>
                     <span className="FormHeader block text-left text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
@@ -105,6 +101,7 @@ class MainScreen extends React.Component {
                     {Object.keys(userChats).map(key =>
                         <div key={key}>
                             <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(userChats[key])}>Go to Chat: {userChats[key]}</button>
+                            <button className="border-black border-2 bg-yellow-500" onClick={(e)=> deleteChat(userChats[key])}>Delete</button>
                         </div>
                         )}
                         </span>

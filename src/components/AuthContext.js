@@ -209,6 +209,22 @@ class AuthProvider extends React.Component {
         catch(error){
             console.log(error)
         }
+        this.fetchChats()
+    }
+
+    deleteChat = async(chatId)=>{
+
+        const chatRef = await chatsRef.doc(chatId).get()
+
+        console.log(chatRef.data())
+
+        try{
+            chatsRef.doc(chatId).delete()
+        }
+        catch(error){
+            console.log(error)
+        }
+        this.fetchChats()
     }
 
     fetchChats = async () => {
@@ -259,6 +275,7 @@ class AuthProvider extends React.Component {
                 botInfo: this.state.botInfo,
                 userChats: this.state.userChats,
                 createChat: this.createChat,
+                deleteChat: this.deleteChat,
                 fetchChats: this.fetchChats,
                 goToChat: this.goToChat,
                 goToProfile: this.goToProfile,
