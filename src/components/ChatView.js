@@ -9,10 +9,28 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { wait } from '@testing-library/react';
 
+/**
+ * This class is for the chat view part of the application, letting chatters chat and perform various related functions
+ * @author Jake Collins
+ */
+
 class ChatView extends React.Component {
     constructor(props) {
         super(props);
         //console.log(this.props.match.params)
+        /**
+         * chatId: Stores the ID of the current chat as a string
+         * content: The content of the message editor
+         * messages: All of the messages in the current conversation
+         * schedulingMessage: Determining whether or not a chatter is trying to schedule their message for a particular time
+         * months,days,years,hours,minutes,seconds,timezones: Used to fill in the select boxes found while a chatter is scheduling a message
+         * updateCount: Used to determine how many times the page has been updated (This is used as a control mechanism for toggling to the scheduling a message view see componentDidUpdate lifecycle method)
+         * firstUnreadMessage: Stores the location in the messages array for the first unread message sent by a user other than the current one
+         * rootURL: Stores the base URL for the chatview page allowing for navigation to the first unread message to occur upon loading/refreshing the page if there is an unread message
+         * mediaFile: Stores the image uploaded via the file uploader to allow the user to add and image which they can then use in a message whenever they please
+         * otherChatters: Stores the unique ID's of chatters as strings so they can be used to fetch display names for the chatHeader (see chatHeader)
+         * chatHeaders: String of all display names of otherChatters for use at the top of the page view 
+         */
         this.state = {
             chatId: '',
             content: '',
@@ -47,8 +65,10 @@ class ChatView extends React.Component {
         //this.deleteMessage()
     }
     componentDidUpdate(){
-        //console.log(this.state.updateCount)    
+        //console.log(this.state.updateCount)
+        //If the user is trying to schedule a message and the page hasn't yet been updated    
         if(this.state.schedulingMessage && this.state.updateCount === 0){
+        //Retrieve the various select box elements to put options into
         const monthList = document.getElementById('month')
         const dayList = document.getElementById('day')
         const yearList = document.getElementById('year')
@@ -56,7 +76,7 @@ class ChatView extends React.Component {
         const minuteList = document.getElementById('minute')
         const secondList = document.getElementById('second') 
         const timezoneList = document.getElementById('timezone')
-
+        //For each one of those select boxes fill it with the appropriate options
         this.state.months.forEach(month =>
             monthList.add(
                 new Option(month, month)
@@ -94,13 +114,16 @@ class ChatView extends React.Component {
             )      
         }   
     }
+    //When the message editor has new content do this:
     handleChange(content, editor) {
         this.setState({updateCount: 1})
         this.setState({content});
       }
+    //When a message is to be submitted do this:  
     handleSubmit = (e,chatter,timeToSend = new Date()) => {
         e.preventDefault();
         try {
+        //Create a message object to store in local state array as well as in NoSQL Database
         const message = {
             content: this.state.content,
             postingUser: chatter.displayName,
@@ -110,8 +133,8 @@ class ChatView extends React.Component {
             unread: true,
             chatId: this.state.chatId
         }
+        //Update the messages array and NoSQL Database (Firebase)
         this.setState({messages: [...this.state.messages, message],content: ''})
-        //chatsRef.add({message})
         this.fetchMessages(this.state.chatId,true)
         chatsRef.doc(this.state.chatId).update({
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
@@ -127,39 +150,37 @@ class ChatView extends React.Component {
         alert('Message failed to send')
     }
       }
-
+    //Retrieve the messages for the current chat, has optional parameter for if this is not the initial load of the page (Thus when called on subsequent times pass true over the default false)
     fetchMessages = async (chatId, updatingMessages = false) => {
         try {
+            //Get the correct database document
             const chat = chatsRef.doc(chatId);
             const doc = await chat.get();
-            //console.log(doc.data().messages)
+            //Update local array of messages
             this.setState({messages: doc.data().chat.messages})
+            //Scroll to bottom of where the message are displayed window
             const messageArea = document.getElementById("messageArea");
             messageArea.scrollTop = messageArea.scrollHeight;
-            //console.log(this.state.messages)
-            //console.log(this.props.match.params.userId)
+            //Look for an unread message from users other than the current user
             let firstUnread = null
             let iterator = 0
             while(firstUnread==null && iterator<=this.state.messages.length){
-                //console.log(this.state.messages[iterator])
+                //If you find an unread message do this 
                 if(this.state.messages[iterator].unread==true && this.state.messages[iterator].userId !== this.props.match.params.userId && new Date(this.state.messages[iterator].createdAt.seconds * 1000) < new Date()){
                     firstUnread = iterator
-                    //console.log(firstUnread)
                     this.setState({firstUnreadMessage: '#'+firstUnread})
-                    //console.log(this.state.firstUnreadMessage)
-                    //console.log(this.state.firstUnreadMessage)
                 }
                 iterator++
             }
-            //console.log(updatingMessages)
+            //If this is the first time loading the messages
             if(updatingMessages===false){            
             const goToFirstUnread = window.confirm("Would you like to go to the first unread message?")
             this.setState({rootUrl: this.state.rootUrl.match(/[^#]*/)[0]})
             if (goToFirstUnread) {
-                //console.log(this.state.rootUrl)
                 window.location.href=this.state.rootUrl + this.state.firstUnreadMessage
             }
         }
+        //Following checking for unread messages mark the messages read
         this.markAsRead()
         }
         catch(error) {
@@ -168,7 +189,9 @@ class ChatView extends React.Component {
     }
 
     scheduleMessage = (e,chatter) => {
+                //Update the update count (as the schedule message view has already been updated)
                 this.setState({updateCount: this.state.updateCount++})
+                //Retrieve values for the dateString for the time the user wishes their message to be sent
                 const currentMonth = document.getElementById("month")
                 const currentDay = document.getElementById("day")
                 const currentYear = document.getElementById("year")
@@ -176,80 +199,79 @@ class ChatView extends React.Component {
                 const currentMinute = document.getElementById("minute")
                 const currentSecond = document.getElementById("second")
                 const currentTimezone = document.getElementById("timezone")
-                /*console.log(currentMonth.value)
-                console.log(currentDay.value)
-                console.log(currentYear.value)
-                console.log(currentHour.value)
-                console.log(currentMinute.value)
-                console.log(currentSecond.value)
-                console.log(currentTimezone.value)
-                const event = new Date('14 Jun 2017 00:00:00 PDT');
-                console.log(event.toUTCString());*/
                 const dateString = currentDay.value +  ' ' + currentMonth.value + ' ' + currentYear.value + ' ' + currentHour.value + ':' + currentMinute.value + ':' + currentSecond.value + ' ' +  '' + currentTimezone.value + ''
-                //console.log(dateString)
                 const formattedDate = new Date(dateString)
                 const currentDate = new Date()
-                //console.log(formattedDate);
-                //console.log(currentDate)
+                //If the date indicates a date that has already passed
                 if(formattedDate < currentDate){
                     alert('You can\'t schedule a message into the past!')
                 }
+                //IF the message has nothing in it
                 else if (this.state.content === ''){
                     alert('The message is empty!')
                 }
+                //If the message has something in it and is to a future date/time
                 else {
-                    //alert('Message Sent!')
                     this.setState({schedulingMessage: !this.state.schedulingMessage})
                     this.handleSubmit(e,chatter,formattedDate)
                 }
     }
 
+    //Delete messages sent by the current user upon clicking on the message
     deleteMessage = async(messageKey) => {
-        //console.log(messageKey)
+        //Make sure they want to delete it
         const confirmation = window.confirm('Are you sure you would like to delete this message?')
-        //console.log(confirmation)
         if (confirmation) {
         try {
+            //Get the correct database document
            const chatData = await chatsRef.doc(this.props.match.params.chatId).get()
            const chatRef = chatsRef.doc(chatData.id)
-           //console.log(chatRef)
            let tempStore = chatData.data().chat.messages
            let filteredTemp = []
            chatData.data().chat.messages.forEach((message,index) =>{
+               //Get the correct message and remove it from the temporary local array of messages
                if(index==messageKey.key){
-                   //console.log(message)
                    delete tempStore[index]
                    for(let i of tempStore) {
                        i && filteredTemp.push(i)
                    }
                    tempStore = filteredTemp
+                   //Update database with new array of messsages
                    chatRef.update({'chat.messages': [...tempStore]})
                }
            })
+           //Update the messages on screen once one has been deleted (This is a subsequent render thus passed true)
            this.fetchMessages(this.props.match.params.chatId,true)
         } catch(error) {
             console.log(error)
         }
     }
     }
+    //Update the database messages to indicate a message as being read
     markAsRead = async() => {
         try {
+            //Get the correct database document
             const chatData = await chatsRef.doc(this.props.match.params.chatId).get()
             const chatRef = chatsRef.doc(chatData.id)
             let tempStore = chatData.data().chat.messages
             chatData.data().chat.messages.forEach((message,index) => {
+                //If a message is unread, not sent by the current user and is a visible message (Not scheduled for future viewing)
                 if(message.unread == true && message.userId !== this.props.match.params.userId && new Date(message.createdAt.seconds * 1000) < new Date()) {
-                    //console.log(message)
+                    //Update the appropriate temporary local message store at the correct location
                     tempStore[index].unread = false
                 }
             })
+            //Update the database document
             chatRef.update({'chat.messages': [...tempStore]})
+            //Update the messages on screen once messages have been marked as read (This is a subsequent render thus passed true)
             this.fetchMessages(this.props.match.params.chatId,true)
         } catch(error) {
             console.log(error)
         }
     }
+    //Allow for the upload of a picture/gif/video
     uploadMedia = (media) =>{ 
+        //Upload the media item
         const uploadTask = storage.ref(`/images/${media.name}`).put(media)
             uploadTask.on('state_changed', 
             (snapShot) => {
@@ -257,42 +279,41 @@ class ChatView extends React.Component {
             }, (err) => {
                 //console.log(err)
             }, async () => {
+                //Get the URL reference to that uploaded item
                 await storage.ref('images').child(media.name).getDownloadURL()
                 .then(fireBaseURL => {
-                    //this.state.imageUrl = fireBaseURL
-                    //console.log(this.state.imageUrl)
+                    //Indicate to the user what URL to use as the source URL in their image contained within a message
                     alert('Use the following URL to put your media item in a message: ' + fireBaseURL)
                 })
             })
     }
 
+    //Handle a media file being uploaded to the page to pass off to a database update function (uploadMedia)
     handleImage = (e) => {
         e.preventDefault()
         const media = e.target.files[0]
-        //this.state.imageFile = image;
-        //console.log(image)
         this.setState({mediaFile: media})
-        //console.log(this.state.imageFile)
     }
 
+    //Set the chat header wtih the appropriate chatters display names
     fetchChatHeader = async () => {
+        //Get the appropriate database document
         const chat = await chatsRef.doc(this.props.match.params.chatId).get()
-        //console.log(test.data().chat.chatters)
         const currentChatters = chat.data().chat.chatters
-        //console.log(currentChatters)
         currentChatters.forEach(chatter => {
+            //If the chatter is not the current one or the Bot account (see botInfo in AuthContext.js)
             if(chatter !== this.props.match.params.userId && chatter !== "jDODSSntxgPUk1awehVq2XmJGGv2"){
                 this.setState({otherChatters: [...this.state.otherChatters, chatter]})
-                //console.log(this.state.otherChatters)
             }
         })
         await this.fetchDisplayNames()
     }
-
+    //Helper function to get the appropriate display names via the otherChatters stored uniqueIds
     fetchDisplayNames = async () => {
             try {
             const userRef = await usersRef.get()
             userRef.forEach(doc => {
+                //If the document includes the userID of another chatter in this conversation add it to the chatHeader state variable
                 if (this.state.otherChatters.toString().includes(doc.data().user.uniqueId)) {
                     this.setState({chatHeader: this.state.chatHeader + doc.data().user.displayName + ' '})
                 }
@@ -302,7 +323,8 @@ class ChatView extends React.Component {
                 console.log(error)
             }
     }
-      
+     
+    //Sets route to the profile page of the chatter by whom the current chatter has clicked on the button of
     fetchUserProfile = (userId) => {
         this.props.history.push(`/ProfileScreen/${userId}`)
     }
@@ -315,6 +337,7 @@ class ChatView extends React.Component {
             <div className="bg-gray-500 h-screen">
             <div className="h-2/3">
             <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatHeader}</p></div>
+            {/*IF the user is scheduling a message render this*/ }
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
                     <div>{ReactHtmlParser(this.state.content)}</div>
@@ -330,10 +353,13 @@ class ChatView extends React.Component {
                 </form>
             ) : (
             <div className="h-full overflow-y-scroll" id="messageArea">
+            {/*Otherwise render the message area as normal*/}
             {Object.keys(this.state.messages).map(key => 
                 <div key={key} id={key}>
+                    {/*Make sure the message should be visible (not scheduled for a time in the future)*/}
                     {new Date(this.state.messages[key].createdAt.seconds * 1000) < new Date() ? (
                     <>
+                    {/*If the message was sent by the current chatter*/}
                     {this.state.messages[key].userId === userInfo.uniqueId ? (
                     <div className="flex justify-end py-4">
                     {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
@@ -345,6 +371,7 @@ class ChatView extends React.Component {
                     </div>) 
                     : (
                     <div className="flex justify-start py-4">
+                    {/*If the message wasn't sent by the current chatter*/}
                     <button onClick={(e)=> this.fetchUserProfile(this.state.messages[key].userId)}><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
                     <div className="bg-green-500">
                         {this.state.messages[key].postingUser}
