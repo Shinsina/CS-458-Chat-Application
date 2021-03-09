@@ -54,7 +54,7 @@ class MainScreen extends React.Component {
             }, async () => {
                 await storage.ref('images').child(image.name).getDownloadURL()
                 .then(fireBaseURL => {
-                    this.state.imageUrl = fireBaseURL
+                    this.setState({imageUrl:fireBaseURL})
                     //console.log(this.state.imageUrl)
                     //console.log(fireBaseURL)
                 })
@@ -72,12 +72,15 @@ class MainScreen extends React.Component {
             {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo}) => (
              <>
              {/*The stories section of the page, differentiated appearance*/}
-             <div className='storyScreen bg-gray-300 h-32'>
+             <div className='storyScreen bg-gray-300 h-48'>
              <div className="storyHeader flex flex-col h-32 w-full bg-gray-300 font-mono py-4">
-                    <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">Stories</p>
-                    <span className="FormHeader text-left text-black lg:text-3xl md:text-2xl sm:text-xl font-mono">
+                    
+                    <span className="FormHeader text-center text-black lg:text-1xl md:text-1xl sm:text-xl font-mono">
                     <label for="myfile">Upload Story: </label>
-                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={this.handleImage}/> </span>
+                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={this.handleImage}/>
+                    <p align="left">{userInfo.displayName}'s Story</p>
+                    <img src={this.state.imageUrl} width="150px" height="150px"></img>
+                     </span>
                     </div>
                     </div>
                     {/*The main menu section*/}
