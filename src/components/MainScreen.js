@@ -16,7 +16,8 @@ class MainScreen extends React.Component {
     state = {
         formToggle: true,
         imageFile: '',
-        imageUrl: ''
+        imageUrl: '',
+        test: false
     }
 
 //Attempt to use the did mount featuer to fetch the chats automatically
@@ -38,8 +39,9 @@ class MainScreen extends React.Component {
 
     }
 
-    handleImage = (e) => {
-        e.preventDefault()
+    handleImage = (userInfo, e) => {
+        console.log(userInfo)
+        //e.preventDefault()
         const image = e.target.files[0]
         //this.state.imageFile = image;
         this.setState({imageFile: image})
@@ -59,13 +61,17 @@ class MainScreen extends React.Component {
                     //console.log(fireBaseURL)
                 })
             })
+            this.showcaseImage(userInfo)
+    }
+    showcaseImage = (userInfo)=>{
+        this.setState({test:true})
     }
 
     /**
      * The render function ensures the following information is getting on screen
      */
     render() {
-        
+  
     return (
         <AuthConsumer>
             {/*Provides the needed information to use later on*/}
@@ -77,9 +83,11 @@ class MainScreen extends React.Component {
                     
                     <span className="FormHeader text-center text-black lg:text-1xl md:text-1xl sm:text-xl font-mono">
                     <label for="myfile">Upload Story: </label>
-                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={this.handleImage}/>
-                    <p align="left">{userInfo.displayName}'s Story</p>
-                    <img src={this.state.imageUrl} width="150px" height="150px"></img>
+                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImage(userInfo, e)}/>
+                    {this.state.test === true ? (<div>
+                        <p align="left">{userInfo.displayName}'s Story</p>
+                        <img src={this.state.imageUrl} width="150px" height="150px"></img>
+                        </div>):(<></>)}
                      </span>
                     </div>
                     </div>
