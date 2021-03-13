@@ -166,7 +166,7 @@ class ChatView extends React.Component {
             let iterator = 0
             while(firstUnread==null && iterator<=this.state.messages.length){
                 //If you find an unread message do this 
-                if(this.state.messages[iterator].unread==true && this.state.messages[iterator].userId !== this.props.match.params.userId && new Date(this.state.messages[iterator].createdAt.seconds * 1000) < new Date()){
+                if(this.state.messages[iterator].unread===true && this.state.messages[iterator].userId !== this.props.match.params.userId && new Date(this.state.messages[iterator].createdAt.seconds * 1000) < new Date()){
                     firstUnread = iterator
                     this.setState({firstUnreadMessage: '#'+firstUnread})
                 }
@@ -230,7 +230,7 @@ class ChatView extends React.Component {
            let filteredTemp = []
            chatData.data().chat.messages.forEach((message,index) =>{
                //Get the correct message and remove it from the temporary local array of messages
-               if(index==messageKey.key){
+               if(index===messageKey.key){
                    delete tempStore[index]
                    for(let i of tempStore) {
                        i && filteredTemp.push(i)
@@ -256,7 +256,7 @@ class ChatView extends React.Component {
             let tempStore = chatData.data().chat.messages
             chatData.data().chat.messages.forEach((message,index) => {
                 //If a message is unread, not sent by the current user and is a visible message (Not scheduled for future viewing)
-                if(message.unread == true && message.userId !== this.props.match.params.userId && new Date(message.createdAt.seconds * 1000) < new Date()) {
+                if(message.unread === true && message.userId !== this.props.match.params.userId && new Date(message.createdAt.seconds * 1000) < new Date()) {
                     //Update the appropriate temporary local message store at the correct location
                     tempStore[index].unread = false
                 }
@@ -367,12 +367,12 @@ class ChatView extends React.Component {
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}
                     </div>
-                    <button onClick={(e)=> this.fetchUserProfile(userInfo.uniqueId)}><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
+                    <button onClick={(e)=> this.fetchUserProfile(userInfo.uniqueId)}><img src={this.state.messages[key].userImage} width="50px" height="50px" alt="Profile"></img></button>
                     </div>) 
                     : (
                     <div className="flex justify-start py-4">
                     {/*If the message wasn't sent by the current chatter*/}
-                    <button onClick={(e)=> this.fetchUserProfile(this.state.messages[key].userId)}><img src={this.state.messages[key].userImage} width="50px" height="50px"></img></button>
+                    <button onClick={(e)=> this.fetchUserProfile(this.state.messages[key].userId)}><img src={this.state.messages[key].userImage} width="50px" height="50px" alt="Profile"></img></button>
                     <div className="bg-green-500">
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}    
@@ -394,16 +394,7 @@ class ChatView extends React.Component {
                 </span>
                 <button className="w-1/3" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
             </div>
-            
-            <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: [
-             'advlist autolink lists link image charmap print preview anchor',
-             'searchreplace visualblocks code fullscreen',
-             'insertdatetime media table paste code help wordcount'],
-           toolbar:
-            'undo redo | formatselect | bold italic backcolor | \
-            alignleft aligncenter alignright alignjustify | \
-            bullist numlist outdent indent | removeformat | help'}}
-            onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
+            <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>
             </form>
             </div>
