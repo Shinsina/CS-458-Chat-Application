@@ -16,7 +16,8 @@ class MainScreen extends React.Component {
     state = {
         formToggle: true,
         imageFile: '',
-        imageUrl: ''
+        imageUrl: '',
+        test: false
     }
 
 //Attempt to use the did mount featuer to fetch the chats automatically
@@ -38,8 +39,9 @@ class MainScreen extends React.Component {
 
     }
 
-    handleImage = (e) => {
-        e.preventDefault()
+    handleImage = (userInfo, e) => {
+        console.log(userInfo)
+        //e.preventDefault()
         const image = e.target.files[0]
         //this.state.imageFile = image;
         this.setState({imageFile: image})
@@ -54,30 +56,39 @@ class MainScreen extends React.Component {
             }, async () => {
                 await storage.ref('images').child(image.name).getDownloadURL()
                 .then(fireBaseURL => {
-                    this.state.imageUrl = fireBaseURL
+                    this.setState({imageUrl:fireBaseURL})
                     //console.log(this.state.imageUrl)
                     //console.log(fireBaseURL)
                 })
             })
+            this.showcaseImage(userInfo)
+    }
+    showcaseImage = (userInfo)=>{
+        this.setState({test:true})
     }
 
     /**
      * The render function ensures the following information is getting on screen
      */
     render() {
-        
+  
     return (
         <AuthConsumer>
             {/*Provides the needed information to use later on*/}
             {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo}) => (
              <>
              {/*The stories section of the page, differentiated appearance*/}
-             <div className='storyScreen bg-gray-300 h-32'>
+             <div className='storyScreen bg-gray-300 h-48'>
              <div className="storyHeader flex flex-col h-32 w-full bg-gray-300 font-mono py-4">
-                    <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">Stories</p>
-                    <span className="FormHeader text-left text-black lg:text-3xl md:text-2xl sm:text-xl font-mono">
+                    
+                    <span className="FormHeader text-center text-black lg:text-1xl md:text-1xl sm:text-xl font-mono">
                     <label for="myfile">Upload Story: </label>
-                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={this.handleImage}/> </span>
+                    <input type="file" id="myfile" name="myfile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImage(userInfo, e)}/>
+                    {this.state.test === true ? (<div>
+                        <p align="left">{userInfo.displayName}'s Story</p>
+                        <img src={this.state.imageUrl} width="150px" height="150px"></img>
+                        </div>):(<></>)}
+                     </span>
                     </div>
                     </div>
                     {/*The main menu section*/}
