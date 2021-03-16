@@ -1,7 +1,7 @@
 import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
-import {AuthConsumer} from './AuthContext'
+import AuthContext, {AuthConsumer} from './AuthContext'
 import { chatsRef, usersRef, storage} from '../firebase';
 import BotView from './BotView';
   
@@ -118,9 +118,16 @@ class ChatView extends React.Component {
     handleChange(content, editor) {
         this.setState({updateCount: 1})
         this.setState({content});
+
+        const mentions = content.includes("@")
+        if(mentions === true ){
+            alert("Who you wanna mention?")
+        }
       }
     //When a message is to be submitted do this:  
     handleSubmit = (e,chatter,timeToSend = new Date()) => {
+
+        
         e.preventDefault();
         try {
         //Create a message object to store in local state array as well as in NoSQL Database
@@ -140,16 +147,50 @@ class ChatView extends React.Component {
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
         })
 
-        var comment = this.state.content.toLowerCase();
-        var parse = comment.includes("!help");
+        const comment = this.state.content.toLowerCase();
+        const parse = comment.includes("!help");
         if (parse === true) {
-            alert("How can I help you? this still a work in progress")
+           
+           // alert("How can I help you? this still a work in progress")
+            //alert(botInfo.displayName);
+            //console.log(this.chatter.displayName.toString())
+
+            this.botSubmit(e, chatter);
+            
         }
     } catch(error) {
         console.log(error)
         alert('Message failed to send')
     }
       }
+
+      botSubmit = (e, chatter, timeToSend = new Date()) => {
+        e.preventDefault();
+        try {
+        //Create a message object to store in local state array as well as in NoSQL Database
+        const message = {
+            content: "\n How can I help you? \n",
+            postingUser: "\n Waffle Cone BOT: \n",
+            userImage: chatter.profilePicture, 
+            userId: chatter.uniqueId,
+            createdAt: timeToSend,
+            unread: true,
+            chatId: this.state.chatId
+        }
+        //Update the messages array and NoSQL Database (Firebase)
+        this.setState({messages: [...this.state.messages, message],content: ''})
+        this.fetchMessages(this.state.chatId,true)
+        chatsRef.doc(this.state.chatId).update({
+            'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
+        })
+
+        
+    } catch(error) {
+        console.log(error)
+        alert('Message failed to send')
+    }
+      }
+
     //Retrieve the messages for the current chat, has optional parameter for if this is not the initial load of the page (Thus when called on subsequent times pass true over the default false)
     fetchMessages = async (chatId, updatingMessages = false) => {
         try {
@@ -398,6 +439,9 @@ class ChatView extends React.Component {
             </span>
             </form>
             </div>
+            </div>
+            <div>
+                Chatters in this chat:  {botInfo.displayName + "(BOT) " } {userInfo.displayName}
             </div>
             </>
                 )}
