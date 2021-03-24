@@ -271,7 +271,7 @@ class ChatView extends React.Component {
            let filteredTemp = []
            chatData.data().chat.messages.forEach((message,index) =>{
                //Get the correct message and remove it from the temporary local array of messages
-               if(index===messageKey.key){
+               if(index.toString()===messageKey.key){
                    delete tempStore[index]
                    for(let i of tempStore) {
                        i && filteredTemp.push(i)

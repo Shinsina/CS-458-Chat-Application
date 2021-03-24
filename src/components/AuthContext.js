@@ -44,6 +44,7 @@ class AuthProvider extends React.Component {
             locationTracking: false,
             onlineStatus: true,
             activityStatus: "",
+            storyImages: []
         }
     }
 
@@ -88,7 +89,8 @@ class AuthProvider extends React.Component {
                     darkMode: true,
                     locationTracking: false,
                     onlineStatus: true,
-                    activityStatus: ''
+                    activityStatus: '',
+                    storyImages: [],
                 }
                 usersRef.add({user})
             }
@@ -116,7 +118,8 @@ class AuthProvider extends React.Component {
                     darkMode: true,
                     locationTracking: false,
                     onlineStatus: true,
-                    activityStatus: ''
+                    activityStatus: '',
+                    storyImages: []
                 }
                 usersRef.add({user})
             })
@@ -200,6 +203,7 @@ class AuthProvider extends React.Component {
                     locationTracking: doc.data().user.locationTracking,
                     onlineStatus: true,
                     activityStatus: doc.data().user.activityStatus,
+                    storyImages: doc.data().user.storyImages
                 }
                 })
                 usersRef.doc(doc.id).update({'user.onlineStatus': true})       
