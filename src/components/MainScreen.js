@@ -131,7 +131,7 @@ class MainScreen extends React.Component {
                     <input type="file" id="myfile" name="myfile" accept="image/*, video/*" onChange={(e)=>this.handleImage(userInfo, e)}/>
                         <p align="left">{userInfo.displayName}'s Story</p>
                         {this.state.isImage===true ?(<div>
-                        <img src={userInfo.storyImages[36]} width="150px" height="150px"/>
+                        <img src={userInfo.storyImages} width="150px" height="150px"/>
                         </div>):(<iframe width = "150px" height = "150px" src = {userInfo.storyImages[36]}></iframe>)}
                      </span>
                     </div>
