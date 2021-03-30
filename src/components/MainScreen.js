@@ -1,6 +1,7 @@
 import React from 'react'
 import {AuthConsumer} from './AuthContext'
 import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
+import ReactHtmlParser from 'react-html-parser'
 
 /**
  * This class is for the overall main menu screen, including naviagation, a chats section, and a stories section
@@ -30,6 +31,7 @@ class MainScreen extends React.Component {
                     {Object.keys(userChats).map(key =>
                         <div key={key}>
                             <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(userChats[key])}>Go to Chat: {userChats[key]}</button>
+                            
                         </div>
                         )}
                 </>
@@ -67,6 +69,29 @@ class MainScreen extends React.Component {
         this.setState({test:true})
     }
 
+    displayUnreadInfo =  async (unreadInfo, userInfo, chat) => {
+        try {
+            //Get the correct database document
+            const chatData = await chatsRef.doc(chat).get()
+            const chatRef = chatsRef.doc(chatData.id)
+            let tempStore = chatData.data().chat.messages
+            chatData.data().chat.messages.forEach((message,index) => {
+                //If a message is unread, not sent by the current user and is a visible message (Not scheduled for future viewing)
+                if(message.unread === true && message.userId !== userInfo.uniqueId && new Date(message.createdAt.seconds * 1000) < new Date()) {
+                    //Update the appropriate temporary local message store at the correct location
+                    tempStore[index].unread = false
+                }
+            })
+            //Update the database document
+            chatRef.update({'chat.messages': [...tempStore]})
+            unreadInfo.messages.forEach(message =>{
+                alert(message.postingUser + " said: " + ReactHtmlParser(message.content)[0].props.children[0])
+            })
+        } catch(error) {
+            console.log(error)
+        }
+    }
+
     /**
      * The render function ensures the following information is getting on screen
      */
@@ -75,7 +100,7 @@ class MainScreen extends React.Component {
     return (
         <AuthConsumer>
             {/*Provides the needed information to use later on*/}
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo, overallUserUnread}) => (
              <>
              {/*The stories section of the page, differentiated appearance*/}
              <div className='storyScreen bg-gray-300 h-48'>
@@ -112,6 +137,9 @@ class MainScreen extends React.Component {
                     {Object.keys(userChats).map(key =>
                         <div key={key}>
                             <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(userChats[key])}>Go to Chat: {userChats[key]}</button>
+                            {overallUserUnread[key] !== undefined && overallUserUnread[key].count > 0 ? (
+                            <button className="border-black border-2 bg-yellow-500" onClick={(e) => this.displayUnreadInfo(overallUserUnread[key], userInfo, userChats[key])} type="button">You have {overallUserUnread[key].count} unread messages here</button>
+                            ) : (<></>)}
                             <button className="border-black border-2 bg-yellow-500" onClick={(e)=> deleteChat(userChats[key])}>Delete</button>
                         </div>
                         )}
