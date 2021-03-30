@@ -44,8 +44,10 @@ class AuthProvider extends React.Component {
             locationTracking: false,
             onlineStatus: true,
             activityStatus: "",
-            storyImages: []
-        }
+            storyImages: [],
+            userImages: []
+        },
+        overallUserUnread: [],
     }
 
     componentDidMount() {
@@ -60,6 +62,7 @@ class AuthProvider extends React.Component {
                 })
                 //Fetch the appropriate information for userInfo state variable
                 this.fetchUser(this.state.user.id);
+                
                 //IF the user isn't logged in
             } else {
                 this.setState({
@@ -91,6 +94,7 @@ class AuthProvider extends React.Component {
                     onlineStatus: true,
                     activityStatus: '',
                     storyImages: [],
+                    userImages: []
                 }
                 usersRef.add({user})
             }
@@ -119,7 +123,8 @@ class AuthProvider extends React.Component {
                     locationTracking: false,
                     onlineStatus: true,
                     activityStatus: '',
-                    storyImages: []
+                    storyImages: [],
+                    userImages: []
                 }
                 usersRef.add({user})
             })
@@ -203,7 +208,8 @@ class AuthProvider extends React.Component {
                     locationTracking: doc.data().user.locationTracking,
                     onlineStatus: true,
                     activityStatus: doc.data().user.activityStatus,
-                    storyImages: doc.data().user.storyImages
+                    storyImages: doc.data().user.storyImages,
+                    userImages: doc.data().user.userImages
                 }
                 })
                 usersRef.doc(doc.id).update({'user.onlineStatus': true})       
@@ -259,10 +265,34 @@ class AuthProvider extends React.Component {
         test.forEach(doc => {
             if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId)){
               this.setState({userChats: [...this.state.userChats, doc.id]})
+              this.fetchUnreadMessages(doc.id)
             }
         })
         }
         catch(error) {
+            console.log(error)
+        }
+    }
+
+    fetchUnreadMessages = async (chatId) => {
+        const chatRef = await chatsRef.doc(chatId).get()
+        try{
+            const chatMessages = chatRef.data().chat.messages
+            let unreadCount = 0;
+            let unreadMessageArray = []
+            chatMessages.forEach(message => {
+                if(message.unread && message.userId !== this.state.userInfo.uniqueId){
+                    unreadCount++;
+                    unreadMessageArray = [...unreadMessageArray, message]
+                } 
+            })
+            const unreadInfo = {
+                count: unreadCount,
+                messages: unreadMessageArray
+            }
+            this.setState({overallUserUnread: [...this.state.overallUserUnread, unreadInfo]})
+        }
+        catch(error){
             console.log(error)
         }
     }
@@ -303,7 +333,9 @@ class AuthProvider extends React.Component {
                 goToProfile: this.goToProfile,
                 goToContacts: this.goToContacts,
                 chatBot: this.chatBot,
-                fetchUser: this.fetchUser
+                fetchUser: this.fetchUser,
+                fetchUnreadMessages: this.fetchUnreadMessages,
+                overallUserUnread: this.state.overallUserUnread
                 }}>
                 {this.props.children}
             </AuthContext.Provider>

@@ -3,7 +3,9 @@ import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
 import AuthContext, {AuthConsumer} from './AuthContext'
 import { chatsRef, usersRef, storage} from '../firebase';
+import ImageViewer from './ImageViewer'
 import BotView from './BotView';
+
   
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -48,7 +50,9 @@ class ChatView extends React.Component {
             rootUrl: '',
             mediaFile: null,
             otherChatters: [],
-            chatHeader: ''
+            chatHeader: '',
+            userImages: [],
+            viewingImages: false
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -311,7 +315,7 @@ class ChatView extends React.Component {
         }
     }
     //Allow for the upload of a picture/gif/video
-    uploadMedia = (media) =>{ 
+    uploadMedia = (media,uploader) =>{ 
         //Upload the media item
         const uploadTask = storage.ref(`/images/${media.name}`).put(media)
             uploadTask.on('state_changed', 
@@ -323,10 +327,26 @@ class ChatView extends React.Component {
                 //Get the URL reference to that uploaded item
                 await storage.ref('images').child(media.name).getDownloadURL()
                 .then(fireBaseURL => {
-                    //Indicate to the user what URL to use as the source URL in their image contained within a message
-                    alert('Use the following URL to put your media item in a message: ' + fireBaseURL)
+                   this.sendMedia(fireBaseURL,uploader)
                 })
             })
+        }
+
+
+    sendMedia = async (URL, uploader) => {
+        try{
+            const userData = await usersRef
+        .   where('user.uniqueId', '==', uploader.uniqueId)
+            .get()
+        userData.forEach(doc => {
+            usersRef.doc(doc.id).update({ 'user.userImages': firebase.firestore.FieldValue.arrayUnion(URL) })
+             //Indicate to the user that their media item uploaded successfully
+            alert('Your media item uploaded successfully!')
+        })
+        } catch(error) {
+            console.log(error)
+        }
+    
     }
 
     //Handle a media file being uploaded to the page to pass off to a database update function (uploadMedia)
@@ -370,6 +390,14 @@ class ChatView extends React.Component {
         this.props.history.push(`/ProfileScreen/${userId}`)
     }
 
+    setUserImages = (userInfo) => {
+        this.setState({userImages: userInfo.userImages, viewingImages: true})
+    }
+
+    returnToMessages = () => {
+        this.setState({viewingImages: false})
+    }
+
     render () {
         return (
             <AuthConsumer>
@@ -377,7 +405,8 @@ class ChatView extends React.Component {
             <>
             <div className="bg-gray-500 h-screen">
             <div className="h-2/3">
-            <div className="h-14 text-center text-lg w-full bg-yellow-500"><p className="py-3">{this.state.chatHeader}</p></div>
+            <div className="bg-yellow-500 w-full"><a href='/' className="fa fa-home">Home</a></div>
+            <div className="h-12 py-3 text-lg w-full bg-yellow-500"><p className="text-center">{this.state.chatHeader}</p></div>
             {/*IF the user is scheduling a message render this*/ }
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
@@ -427,17 +456,20 @@ class ChatView extends React.Component {
                 )}
             </div>
     )}
+    {!this.state.viewingImages ? (
             <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
             <div className="align-center text-center w-full bg-yellow-500 text-black border-black box-border border-2">
-                <button className="w-1/3" type="submit">Submit</button>
-                <span className="w-1/3" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
-                    {this.state.mediaFile !== null ? (<button onClick={(e) => this.uploadMedia(this.state.mediaFile)} type="button">Upload</button>) : (<></>)}
+                <button className="w-1/4" type="submit">Submit</button>
+                <span className="w-1/4" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
+                    {this.state.mediaFile !== null ? (<button onClick={(e) => this.uploadMedia(this.state.mediaFile,userInfo)} type="button">Upload</button>) : (<></>)}
                 </span>
-                <button className="w-1/3" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
+                <button className="w-1/4" type="button" onClick={(e) => this.setUserImages(userInfo)}>View Your Media</button>
+                <button className="w-1/4" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
             </div>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>
             </form>
+            ) : (<ImageViewer userImages={this.state.userImages} returnToMessages={this.returnToMessages}/>)}
             </div>
             </div>
             <div>
