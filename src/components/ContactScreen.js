@@ -107,7 +107,6 @@ class ContactScreen extends React.Component {
                                     });
                                 });
                             console.log(userobj);
-                            if (!userobj) return (<></>);
 
                             const displayName = userobj.user.displayName;
                             console.log(displayName);
@@ -123,7 +122,7 @@ class ContactScreen extends React.Component {
                                     {userobj}
                                 </button>
                             </h3></div>);
-                        }).map(async p => await p)}
+                        })}
                     </>
                 )}
             </AuthConsumer>
