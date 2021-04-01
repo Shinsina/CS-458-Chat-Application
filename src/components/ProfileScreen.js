@@ -15,11 +15,13 @@ class ProfileScreen extends React.Component {
         loggedInUser: false,
         userInfo: {},
         userChats: [],
+        isUserBlocked: false,
 
     }
 
     componentDidMount() {
         this.fetchOtherUser(this.props.match.params.userId)
+        this.isUserBlocked(this.props.match.params.userId)
 
     }
 
@@ -73,6 +75,7 @@ class ProfileScreen extends React.Component {
         </div>
     }
 
+    //this method grabs all data of the other user
     fetchOtherUser = async userId => {
         try {
             const currentUser = await usersRef
@@ -119,6 +122,7 @@ class ProfileScreen extends React.Component {
             console.log(error)
         }
     }
+    //this method adds the other user id to the logged in user's array list of blocked people
     blockOtherUser = async (loggedInUser) => {
         const currentUser = await usersRef
             .where('user.uniqueId', '==', loggedInUser)
@@ -128,6 +132,32 @@ class ProfileScreen extends React.Component {
                 'user.blockList': firebase.firestore.FieldValue.arrayUnion(this.props.match.params.userId)
             })
         })
+        console.log(this.state.isUserBlocked)
+    }
+
+    unBlockOtherUser = async (loggedInUser) => {
+        const currentUser = await usersRef
+            .where('user.uniqueId', '==', loggedInUser)
+            .get()
+        currentUser.forEach(doc => {
+            usersRef.doc(doc.id).update({
+                'user.blockList': firebase.firestore.FieldValue.arrayRemove(this.props.match.params.userId)
+            })
+        })
+    }
+
+    isUserBlocked = async (loggedInUser) => {
+        const currentUser = await usersRef
+            .where('user.uniqueId', '==', loggedInUser)
+            .get()
+        currentUser.forEach(doc => {
+            console.log(doc.data().user)
+            console.log(this.props.match.params.userId)
+            if (doc.data().user.blockList.toString().includes(this.props.match.params.userId)) {
+                console.log("anything")
+                this.setState({isUserBlocked: true})
+            }
+        })
     }
 
 
@@ -136,6 +166,7 @@ class ProfileScreen extends React.Component {
             <AuthConsumer>
                 {({ userInfo, fetchUser, goToChat }) => (
                     <>
+                        {/*this turnary opperator checks if we are passing the other user id as a paramater*/}
                         {this.props.match.params.userId == userInfo.uniqueId ? (
                             //Logged in user profile
 
@@ -165,7 +196,9 @@ class ProfileScreen extends React.Component {
                                         <br></br>
                                         <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
                                             <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Location Toggle</button></span>
-
+                                        <br></br>
+                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Blocked Users</button></span>
 
                                     </div>
                                 </div>
@@ -173,9 +206,8 @@ class ProfileScreen extends React.Component {
 
                             </>
                         ) : (
-                            //other user
+                            //this is the second part of the turnary that renders all functionality of the other user profile screen
                             <>
-                                {console.log("Other User?")}
                                 <div className="bg-gray-500 h-screen">
                                     <div className="profileHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
                                         <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{this.state.userInfo.displayName}
@@ -194,9 +226,22 @@ class ProfileScreen extends React.Component {
                                     <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
                                         <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Add to Contacts</button></span>
                                     <br></br>
-                                    <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                        <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.blockOtherUser(userInfo.uniqueId)}>Block User</button></span>
-                                    <br></br>
+
+                                    {this.state.isUserBlocked == false ?
+                                        (
+                                            <>
+                                                <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                                    <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.blockOtherUser(userInfo.uniqueId)}>Block User</button></span>
+                                                <br></br>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                                    <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.unBlockOtherUser(userInfo.uniqueId)}>Unblock User</button></span>
+                                                <br></br>
+                                            </>
+                                        )}
+
 
                                     {this.state.userChats.length == 0 ? (<>
                                         <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
@@ -206,19 +251,15 @@ class ProfileScreen extends React.Component {
 
                                     ) : (
                                         <>
-                                        {
-                                            Object.keys(this.state.userChats).map(key =>
-                                                <div key={key}>
-                                                    <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(this.state.userChats[key])}>Go to Chat: {this.state.userChats[key]}</button>
-                                                </div>
-                                            )
-                                        }
-                                    </>
+                                            {
+                                                Object.keys(this.state.userChats).map(key =>
+                                                    <div key={key}>
+                                                        <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(this.state.userChats[key])}>Go to Chat: {this.state.userChats[key]}</button>
+                                                    </div>
+                                                )
+                                            }
+                                        </>
                                     )}
-
-
-                                
-
                                 </div>
                             </>
                         )}
