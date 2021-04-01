@@ -129,7 +129,7 @@ class ChatView extends React.Component {
         }
       }
     //When a message is to be submitted do this:  
-    handleSubmit = (e,chatter,timeToSend = new Date()) => {
+    handleSubmit = (e,chatter,timeToSend = new Date(), bot = {}) => {
 
         
         e.preventDefault();
@@ -159,7 +159,7 @@ class ChatView extends React.Component {
             //alert(botInfo.displayName);
             //console.log(this.chatter.displayName.toString())
 
-            this.botSubmit(e, chatter);
+            this.botSubmit(e, bot);
             
         }
     } catch(error) {
@@ -174,7 +174,7 @@ class ChatView extends React.Component {
         //Create a message object to store in local state array as well as in NoSQL Database
         const message = {
             content: "\n How can I help you? \n",
-            postingUser: "\n Waffle Cone BOT: \n",
+            postingUser: chatter.displayName,
             userImage: chatter.profilePicture, 
             userId: chatter.uniqueId,
             createdAt: timeToSend,
@@ -457,7 +457,7 @@ class ChatView extends React.Component {
             </div>
     )}
     {!this.state.viewingImages ? (
-            <form onSubmit={(e) => this.handleSubmit(e,userInfo)}>
+            <form onSubmit={(e) => this.handleSubmit(e,userInfo,undefined,botInfo)}>
             <div className="align-center text-center w-full bg-yellow-500 text-black border-black box-border border-2">
                 <button className="w-1/4" type="submit">Submit</button>
                 <span className="w-1/4" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>

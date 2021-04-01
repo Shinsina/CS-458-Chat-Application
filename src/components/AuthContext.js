@@ -299,7 +299,8 @@ class AuthProvider extends React.Component {
     }
     //Go the chat view for the chat by the ID passed into this function
     goToChat = (chatId) => {
-        this.props.history.push(`/Chat/${this.state.user.id}/${chatId}`)
+        if (chatId == undefined) return;
+        else this.props.history.push(`/Chat/${this.state.user.id}/${chatId}`)
     }
     //Go the the currently logged in users profile
     goToProfile = () => {
