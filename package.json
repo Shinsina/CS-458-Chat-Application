@@ -13,6 +13,7 @@
     "autoprefixer": "^9.8.6",
     "cra-template-pwa": "^1.0.3",
     "firebase": "^8.2.6",
+    "google-maps-react": "^2.0.6",
     "netlify-cli": "^3.6.0",
     "postcss": "^7.0.35",
     "react": "^17.0.1",

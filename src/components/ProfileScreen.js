@@ -5,10 +5,9 @@ import { AuthConsumer } from './AuthContext'
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
-
+let count = 0
 class ProfileScreen extends React.Component {
     statusInput = React.createRef();
-
     state = {
         status: "Double click to change status",
         isInEditMode: false,
@@ -16,13 +15,18 @@ class ProfileScreen extends React.Component {
         userInfo: {},
         userChats: [],
         isUserBlocked: false,
-
+        updateCount: 0,
     }
 
-    componentDidMount() {
-        this.fetchOtherUser(this.props.match.params.userId)
-        this.isUserBlocked(this.props.match.params.userId)
-
+    
+    componentDidUpdate() {
+    if(this.props.userInfo.profilePicture && this.state.updateCount === 0 ){
+        this.setState({updateCount: 1})
+        // console.log(this.props)
+        // console.log(count)
+        this.fetchOtherUser(this.props.urlID)
+        this.isUserBlocked(this.props.userInfo.uniqueId)
+    }
     }
 
     changeEditMode = () => {
@@ -111,8 +115,8 @@ class ProfileScreen extends React.Component {
                 .get()
             test.forEach(doc => {
                 //console.log(doc.id, '=>', doc.data().chat.chatters.toString())
-                if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId) && doc.data().chat.chatters.toString().includes(this.props.match.params.userId)) {
-                    console.log("HELLO")
+                if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId) && doc.data().chat.chatters.toString().includes(this.props.urlID)) {
+                    //console.log("HELLO")
                     this.setState({ userChats: [...this.state.userChats, doc.id] })
                 }
             })
@@ -129,10 +133,10 @@ class ProfileScreen extends React.Component {
             .get()
         currentUser.forEach(doc => {
             usersRef.doc(doc.id).update({
-                'user.blockList': firebase.firestore.FieldValue.arrayUnion(this.props.match.params.userId)
+                'user.blockList': firebase.firestore.FieldValue.arrayUnion(this.props.urlID)
             })
         })
-        console.log(this.state.isUserBlocked)
+        //console.log(this.state.isUserBlocked)
     }
 
     unBlockOtherUser = async (loggedInUser) => {
@@ -141,7 +145,7 @@ class ProfileScreen extends React.Component {
             .get()
         currentUser.forEach(doc => {
             usersRef.doc(doc.id).update({
-                'user.blockList': firebase.firestore.FieldValue.arrayRemove(this.props.match.params.userId)
+                'user.blockList': firebase.firestore.FieldValue.arrayRemove(this.props.urlID)
             })
         })
     }
@@ -151,9 +155,9 @@ class ProfileScreen extends React.Component {
             .where('user.uniqueId', '==', loggedInUser)
             .get()
         currentUser.forEach(doc => {
-            console.log(doc.data().user)
-            console.log(this.props.match.params.userId)
-            if (doc.data().user.blockList.toString().includes(this.props.match.params.userId)) {
+            //console.log(doc.data().user)
+            //console.log(this.props.urlID)
+            if (doc.data().user.blockList.toString().includes(this.props.urlID)) {
                 console.log("anything")
                 this.setState({isUserBlocked: true})
             }
@@ -167,7 +171,7 @@ class ProfileScreen extends React.Component {
                 {({ userInfo, fetchUser, goToChat }) => (
                     <>
                         {/*this turnary opperator checks if we are passing the other user id as a paramater*/}
-                        {this.props.match.params.userId == userInfo.uniqueId ? (
+                        {this.props.urlID == userInfo.uniqueId ? (
                             //Logged in user profile
 
                             <>
