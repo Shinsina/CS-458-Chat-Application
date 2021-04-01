@@ -274,6 +274,7 @@ class AuthProvider extends React.Component {
         }
     }
 
+
     fetchUnreadMessages = async (chatId) => {
         const chatRef = await chatsRef.doc(chatId).get()
         try{

@@ -2,6 +2,8 @@ import React from 'react'
 import {AuthConsumer} from './AuthContext'
 import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
 import ReactHtmlParser from 'react-html-parser'
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
 /**
  * This class is for the overall main menu screen, including naviagation, a chats section, and a stories section
@@ -28,10 +30,31 @@ class MainScreen extends React.Component {
         
 
     }
-    //Need HTML event make in auth context, define other variable
-    //user info, and the storage ref option
 
-    handleImage = (userInfo, e) => {
+
+
+
+    sendMedia = async (URL, uploader, fetchUser) => {
+        try{
+            console.log(URL)
+            const userData = await usersRef
+        .   where('user.uniqueId', '==', uploader.uniqueId)
+            .get()
+        userData.forEach(doc => {
+            usersRef.doc(doc.id).update({ 'user.storyImages': firebase.firestore.FieldValue.arrayUnion(URL) })
+             //Indicate to the user that their media item uploaded successfully
+            alert('Your media item uploaded successfully!')
+        })
+        } catch(error) {
+            console.log(error)
+        }
+        console.log(uploader)
+        fetchUser(uploader.uniqueId)
+        console.log(uploader)
+    
+    }
+
+    handleImage = (userInfo, e, fetchUser) => {
         console.log(userInfo.storyImages[0])
         //e.preventDefault()
         const image = e.target.files[0]
@@ -68,14 +91,16 @@ class MainScreen extends React.Component {
 
                     //Pass functions into this, recall in auth context, recall fetchUser
                     //Pass fetchUser into the function, and then call it
-                                                            
+                    this.sendMedia(fireBaseURL, userInfo, fetchUser)
+                    
                 })
             })
+            
             this.showcaseImage(userInfo)
     }
     showcaseImage = (userInfo)=>{
         this.setState({test:true})
-        if(userInfo.storyImages.includes("image/gif", "image/jpeg", "image/png")){
+        if(userInfo.storyImages[userInfo.storyImages.length-1].includes(".gif", ".jpeg", ".png")){
             this.setVar(userInfo)
             this.setState({isImage:true})
         }
@@ -120,7 +145,7 @@ class MainScreen extends React.Component {
     return (
         <AuthConsumer>
             {/*Provides the needed information to use later on*/}
-            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo, overallUserUnread}) => (
+            {({signUp, logIn, user, authMessage, logOut, createChat, fetchChats, userChats, goToChat, chatBot, goToProfile, goToContacts, deleteChat, userInfo, overallUserUnread, fetchUser}) => (
              <>
              {/*The stories section of the page, differentiated appearance*/}
              <div className='storyScreen bg-gray-300 h-48'>
@@ -128,12 +153,11 @@ class MainScreen extends React.Component {
                     
                     <span className="FormHeader text-center text-black lg:text-1xl md:text-1xl sm:text-xl font-mono">
                     <label for="myfile">Upload Story: </label>
-                    <input type="file" id="myfile" name="myfile" accept="image/*, video/*" onChange={(e)=>this.handleImage(userInfo, e)}/>
+                    <input type="file" id="myfile" name="myfile" accept="image/*, video/*" onChange={(e)=>this.handleImage(userInfo, e, fetchUser)}/>
                         <p align="left">{userInfo.displayName}'s Story</p>
-                        {this.state.isImage===true ?(<div>
-                        <img src={userInfo.storyImages[36]} width="150px" height="150px"/>
-                        </div>):(<iframe width = "150px" height = "150px" src = {userInfo.storyImages[36]}></iframe>)}
-                     </span>
+                        {userInfo.storyImages!==undefined ?( 
+                            <iframe width = "150px" height = "150px" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></iframe>):(<></>)}
+                    </span>
                     </div>
                     </div>
                     {/*Set the userInfo variable to a local variable*/}
