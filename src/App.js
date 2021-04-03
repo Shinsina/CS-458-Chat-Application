@@ -10,6 +10,7 @@ import ContactScreen from './components/ContactScreen'
 import ReactHtmlParser from 'react-html-parser';
 import MapContainer from './components/Map'
 import {Editor} from '@tinymce/tinymce-react';
+import CurrentLocationMapFilter from './components/CurrentLocationMapFilter';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
     <Route exact path="/BotView" component={BotView}/>
     <Route exact path="/Contacts" component={ContactScreen}/>
     <Route exact path="/Map" component={MapContainer}/>
+    <Route exact path ="/CurrentLocation/:username/:lat/:lng" component={CurrentLocationMapFilter}/>
     </Switch>
     </AuthProvider>
     </BrowserRouter>

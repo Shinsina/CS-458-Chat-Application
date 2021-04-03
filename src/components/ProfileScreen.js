@@ -28,6 +28,9 @@ class ProfileScreen extends React.Component {
         this.isUserBlocked(this.props.userInfo.uniqueId)
     }
     }
+    componentDidMount(){
+        this.setState({updateCount: 0})
+    }
 
     changeEditMode = () => {
         this.setState({

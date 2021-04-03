@@ -5,6 +5,7 @@ import AuthContext, {AuthConsumer} from './AuthContext'
 import { chatsRef, usersRef, storage} from '../firebase';
 import ImageViewer from './ImageViewer'
 import BotView from './BotView';
+import GoogleApiWrapper from './Map'
 
   
 import firebase from 'firebase/app';
@@ -52,7 +53,9 @@ class ChatView extends React.Component {
             otherChatters: [],
             chatHeader: '',
             userImages: [],
-            viewingImages: false
+            viewingImages: false,
+            coordinates: null,
+            mapStyles: {width: '15%', height: '15%'}
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -135,7 +138,7 @@ class ChatView extends React.Component {
         e.preventDefault();
         try {
         //Create a message object to store in local state array as well as in NoSQL Database
-        const message = {
+        let message = {
             content: this.state.content,
             postingUser: chatter.displayName,
             userImage: chatter.profilePicture, 
@@ -144,8 +147,20 @@ class ChatView extends React.Component {
             unread: true,
             chatId: this.state.chatId
         }
+        if (this.state.coordinates !== null) {
+            message = {
+            content: this.state.content,
+            postingUser: chatter.displayName,
+            userImage: chatter.profilePicture, 
+            userId: chatter.uniqueId,
+            createdAt: timeToSend,
+            unread: true,
+            chatId: this.state.chatId,
+            location: this.state.coordinates
+            }
+        }
         //Update the messages array and NoSQL Database (Firebase)
-        this.setState({messages: [...this.state.messages, message],content: ''})
+        this.setState({messages: [...this.state.messages, message],content: '', coordinates: null})
         this.fetchMessages(this.state.chatId,true)
         chatsRef.doc(this.state.chatId).update({
             'chat.messages': firebase.firestore.FieldValue.arrayUnion(message)
@@ -398,6 +413,31 @@ class ChatView extends React.Component {
         this.setState({viewingImages: false})
     }
 
+    getLocation = (userInfo) => {
+        if(userInfo.locationTracking) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(this.sendLocation);
+        } else { 
+          alert('Geolocation is not supported by this browser or is not been allowed')
+        }
+    } else {
+      alert('Your account has location services disabled please enable it to allow for this feature')  
+    }
+      }
+      
+    sendLocation = (position) => {
+        this.setState({coordinates: {latitude: position.coords.latitude, longitude:position.coords.longitude}})
+        alert('Location will be sent when message is sent')
+      }
+    
+      goToLocation = (message) => {
+          const confirmation = window.confirm('Would you like to view the sent location?')
+          if(confirmation){
+          this.props.history.push(`/CurrentLocation/${message.postingUser}/${message.location.latitude}/${message.location.longitude}`)
+          }
+      }
+
+
     render () {
         return (
             <AuthConsumer>
@@ -432,10 +472,18 @@ class ChatView extends React.Component {
                     {/*If the message was sent by the current chatter*/}
                     {this.state.messages[key].userId === userInfo.uniqueId ? (
                     <div className="flex justify-end py-4">
+                    <div className="flex flex-col">
+                    <div>
                     {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
+                    </div>
+                    <button onClick={(e) => this.goToLocation(this.state.messages[key])}>
+                    {this.state.messages[key].location ? (<p>&#128205;</p>): (<></>)}
+                    </button>
+                    </div>
                     <div className="bg-yellow-500" onClick={(e) => this.deleteMessage({key})}>
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}
+                        
                     </div>
                     <button onClick={(e)=> this.fetchUserProfile(userInfo.uniqueId)}><img src={this.state.messages[key].userImage} width="50px" height="50px" alt="Profile"></img></button>
                     </div>) 
@@ -447,7 +495,14 @@ class ChatView extends React.Component {
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}    
                     </div>
+                    <div className="flex flex-col">
+                    <div>
                     {this.state.messages[key].unread ? (<p>&#10062;</p>) : (<p>&#9989;</p>)}
+                    </div>
+                    <button onClick={(e) => this.goToLocation(this.state.messages[key])}>
+                    {this.state.messages[key].location ? (<p>&#128205;</p>): (<></>)}
+                    </button>
+                    </div>
                     </div>
                     )}
                     </>
@@ -459,12 +514,13 @@ class ChatView extends React.Component {
     {!this.state.viewingImages ? (
             <form onSubmit={(e) => this.handleSubmit(e,userInfo,undefined,botInfo)}>
             <div className="align-center text-center w-full bg-yellow-500 text-black border-black box-border border-2">
-                <button className="w-1/4" type="submit">Submit</button>
-                <span className="w-1/4" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
+                <button className="w-1/5" type="submit">Submit</button>
+                <span className="w-1/5" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
                     {this.state.mediaFile !== null ? (<button onClick={(e) => this.uploadMedia(this.state.mediaFile,userInfo)} type="button">Upload</button>) : (<></>)}
                 </span>
-                <button className="w-1/4" type="button" onClick={(e) => this.setUserImages(userInfo)}>View Your Media</button>
-                <button className="w-1/4" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
+                <button className="w-1/5" type="button" onClick={(e) => this.setUserImages(userInfo)}>View Your Media</button>
+                <button className="w-1/5" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
+                <button className="w-1/5" type="button" onClick={(e) => this.getLocation(userInfo)}>Send Location</button>
             </div>
             <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
             </span>

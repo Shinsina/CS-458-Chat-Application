@@ -1,17 +1,18 @@
 import React from 'react'
-import ProfileScreen from './ProfileScreen'
+import GoogleApiWrapper from './Map'
 import { AuthConsumer } from './AuthContext'
 
-class ProfileScreenRenderer extends React.Component {
+class ContactListMapFilter extends React.Component {
   constructor(props) {
     super(props)
     console.log(props)
-    this.state = {
-      mounted: false
-    }
+  }
+  state = {
+    mounted: true
   }
   render() {
     return (
+      <>
       <AuthConsumer>
         {({userInfo}) => (
       <>
@@ -21,8 +22,10 @@ class ProfileScreenRenderer extends React.Component {
       </>
       )}
       </AuthConsumer>
+      <GoogleApiWrapper lat={this.props.match.params.lat} lng={this.props.match.params.lng} username={this.props.match.params.username}/>
+      </>
     )
   }
 }
 
-export default ProfileScreenRenderer
+export default ContactListMapFilter
