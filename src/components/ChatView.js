@@ -2,15 +2,13 @@ import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
 import AuthContext, {AuthConsumer} from './AuthContext'
-import { chatsRef, usersRef, storage} from '../firebase';
+import { chatsRef, usersRef, storage, gifAPI } from '../firebase';
 import ImageViewer from './ImageViewer'
 import BotView from './BotView';
-import GoogleApiWrapper from './Map'
-
-  
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { wait } from '@testing-library/react';
+import ReactGiphySearchbox from 'react-giphy-searchbox'
 
 /**
  * This class is for the chat view part of the application, letting chatters chat and perform various related functions
@@ -522,15 +520,22 @@ class ChatView extends React.Component {
                 <button className="w-1/5" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
                 <button className="w-1/5" type="button" onClick={(e) => this.getLocation(userInfo)}>Send Location</button>
             </div>
-            <span className="block h-full"><Editor value={this.state.content} init={{resize: false, plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} className="overflow-y-scroll w-full h-full"></Editor>
-            </span>
-            </form>
-            ) : (<ImageViewer userImages={this.state.userImages} returnToMessages={this.returnToMessages}/>)}
-            </div>
+            <div className="flex flex-row h-full bg-yellow-500 text-black border-black box-border border-">
+                <div className="w-1/2 h-full">
+                <Editor value={this.state.content} init={{resize: false, height:'350px' ,plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} ></Editor>
+                </div>
+                <div className="w-1/2">
+                <ReactGiphySearchbox apiKey={gifAPI} onSelect={item => alert('Copy paste the following URL using the Insert Image funcationality of the message creator ' + item.images.original.url)} masonryConfig={[{ columns: 2, imageWidth: 110, gutter: 5 },{ mq: '700px', columns: 8, imageWidth: 110, gutter: 5 },]} gifPerPage='30'/>
+                </div>
             </div>
             <div>
                 Chatters in this chat:  {botInfo.displayName + "(BOT) " } {userInfo.displayName}
             </div>
+            </form>
+            ) : (<ImageViewer userImages={this.state.userImages} returnToMessages={this.returnToMessages}/>)}
+            </div>
+            </div>
+            
             </>
                 )}
             </AuthConsumer>

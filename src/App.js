@@ -11,6 +11,7 @@ import ReactHtmlParser from 'react-html-parser';
 import MapContainer from './components/Map'
 import {Editor} from '@tinymce/tinymce-react';
 import CurrentLocationMapFilter from './components/CurrentLocationMapFilter';
+import ContactListMapWrapper from './components/ContactListMapWrapper';
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
     <Route exact path="/ProfileScreen/:userId" component={ProfileScreenRenderer}/>
     <Route exact path="/BotView" component={BotView}/>
     <Route exact path="/Contacts" component={ContactScreen}/>
-    <Route exact path="/Map" component={MapContainer}/>
+    <Route exact path="/Map" component={ContactListMapWrapper}/>
     <Route exact path ="/CurrentLocation/:username/:lat/:lng" component={CurrentLocationMapFilter}/>
     </Switch>
     </AuthProvider>
