@@ -18,18 +18,18 @@ class ProfileScreen extends React.Component {
         updateCount: 0,
     }
 
-    
+
     componentDidUpdate() {
-    if(this.props.userInfo.profilePicture && this.state.updateCount === 0 ){
-        this.setState({updateCount: 1})
-        // console.log(this.props)
-        // console.log(count)
-        this.fetchOtherUser(this.props.urlID)
-        this.isUserBlocked(this.props.userInfo.uniqueId)
+        if (this.props.userInfo.profilePicture && this.state.updateCount === 0) {
+            this.setState({ updateCount: 1 })
+            // console.log(this.props)
+            // console.log(count)
+            this.fetchOtherUser(this.props.urlID)
+            this.isUserBlocked(this.props.userInfo.uniqueId)
+        }
     }
-    }
-    componentDidMount(){
-        this.setState({updateCount: 0})
+    componentDidMount() {
+        this.setState({ updateCount: 0 })
     }
 
     changeEditMode = () => {
@@ -162,11 +162,15 @@ class ProfileScreen extends React.Component {
             //console.log(this.props.urlID)
             if (doc.data().user.blockList.toString().includes(this.props.urlID)) {
                 console.log("anything")
-                this.setState({isUserBlocked: true})
+                this.setState({ isUserBlocked: true })
             }
         })
     }
 
+    goBack() {
+        console.log("test go back")
+        window.history.back();
+      }
 
     render() {
         return (
@@ -181,6 +185,8 @@ class ProfileScreen extends React.Component {
                                 {console.log("Current User?")}
                                 <div className="bg-gray-500 h-screen">
                                     <div className="profileHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
+                                    <span className="FormHeader block text-left text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                    <button className="border-black border-2 bg-yellow-500 " onClick={() => this.goBack()}>Back</button></span>
                                         <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{userInfo.displayName}</p>
                                         <div className="flex justify-center">
                                             <img src={userInfo.profilePicture} width="60px" height="60px"></img>
