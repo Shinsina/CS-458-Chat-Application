@@ -28,11 +28,7 @@ class MainScreen extends React.Component {
 //Attempt to use the did mount featuer to fetch the chats automatically
     componentDidMount(){
         
-
     }
-
-
-
 
     sendMedia = async (URL, uploader, fetchUser) => {
         try{
