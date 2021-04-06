@@ -172,7 +172,7 @@ class ChatView extends React.Component {
             //alert(botInfo.displayName);
             //console.log(this.chatter.displayName.toString())
 
-            this.botSubmit(e, bot);
+            this.botSubmit(e, bot, timeToSend, chatter);
             
         }
     } catch(error) {
@@ -181,15 +181,18 @@ class ChatView extends React.Component {
     }
       }
 
-      botSubmit = (e, chatter, timeToSend = new Date()) => {
+      botSubmit = (e, bot, timeToSend = new Date(), chatter) => {
         e.preventDefault();
         try {
+
+            let botContent = "";
+
         //Create a message object to store in local state array as well as in NoSQL Database
         const message = {
-            content: "\n How can I help you? \n",
-            postingUser: chatter.displayName,
-            userImage: chatter.profilePicture, 
-            userId: chatter.uniqueId,
+            content: "\n how can i help you",
+            postingUser: bot.displayName = "Waffle Cone",
+            userImage: bot.profilePicture, 
+            userId: bot.uniqueId = "jDODSSntxgPUk1awehVq2XmJGGv2",
             createdAt: timeToSend,
             unread: true,
             chatId: this.state.chatId
