@@ -111,6 +111,10 @@ class MainScreen extends React.Component {
     }
 
     displayUnreadInfo =  async (unreadInfo, userInfo, chat) => {
+        /**
+         * @author Jake Collins
+         * Display the unread messages for the conversation that was clicked on
+         */
         try {
             //Get the correct database document
             const chatData = await chatsRef.doc(chat).get()

@@ -2,15 +2,22 @@ import React from 'react';
 import { Map, GoogleApiWrapper, Marker, InfoWindow } from 'google-maps-react';
 import { mapsAPI } from '../firebase'
 
-const containerStyle = {
-  position: 'absolute',  
-  width: '100%',
-  height: '100%'
-}
+/**
+ * This class is for the map view of the application utilziing the Google Maps JavaScript SDK in order to render google maps on screen with the usual features and some according markers
+ * @author Jake Collins
+ */
+
 export class MapContainer extends React.Component {
   constructor(props) {
     super(props)
-    // console.log(props)
+    /**
+     * mapStyles: CSS styling for the map
+     * showingInfoWindow: If the user is currently looking at the Info Window
+     * activeMarker: The current marker location that has been clicked by the user
+     * selectedPlace: properties associated with the selected markers location (coordinates and name mainly)
+     * updated: whether or not the component has been updated or not
+     * locationList: List of all the locations that need to be placed on the ContactList version of the map
+     */
     this.state = {
     mapStyles: {width: '100%', height: '100%'},
     showingInfoWindow: false,
@@ -23,17 +30,17 @@ export class MapContainer extends React.Component {
   }
 
   componentDidMount() {
-    if(this.props.lat && this.props.lng && this.props.username){
+    if(this.props.lat && this.props.lng && this.props.username){ //If given a sent location from a message
       this.setState({sentLocation: {lat: this.props.lat, lng: this.props.lng, username: this.props.username}})
-    } else if (this.props.locationsList) {
+    } else if (this.props.locationsList) { //If given the contact list version of the map
       this.setState({locationsList: this.props.locationsList})
-    } else {
+    } else { //If somehow either of the following were not true
       this.setState({updated: false})
     }
   }
 
   
-
+  //Display the info associated with a location when clicked on
   onMarkerClick = (props, marker, e) =>
     this.setState({
       selectedPlace: props,
@@ -41,6 +48,7 @@ export class MapContainer extends React.Component {
       showingInfoWindow: true
     });
 
+  //Hide the info window when the map is clicked
   onMapClicked = (props) => {
     if (this.state.showingInfoWindow) {
       this.setState({

@@ -1,8 +1,6 @@
 import React from 'react'
 import {firebaseAuth, usersRef, chatsRef, storage} from '../firebase'
 import {withRouter} from 'react-router-dom' 
-
-import firebase from 'firebase/app'
 import 'firebase/firestore'
 
 const AuthContext = React.createContext()
@@ -27,6 +25,7 @@ class AuthProvider extends React.Component {
      * A boolean indicator for whether the user is logged in currently or not (onlineStatus)
      * A string storing a user set activity status (activityStatus)
      * botInfo: The user info for the bot account (displayName; Waffle Cone)
+     * overallUserUnread: Stores all information related to unread messages for all conversations of the currently logged in user
      */
     state = {
         user: {},
@@ -245,7 +244,7 @@ class AuthProvider extends React.Component {
 
         const chatRef = await chatsRef.doc(chatId).get()
 
-        console.log(chatRef.data())
+        //console.log(chatRef.data())
 
         try{
             chatsRef.doc(chatId).delete()
@@ -314,7 +313,7 @@ class AuthProvider extends React.Component {
     chatBot = () => {
         this.props.history.push(`/BotView`)
     }
-//PRovides the functions and data stored in this class to be "consumed" by other classes
+    //Provides the functions and data stored in this class to be "consumed" by other classes
     render () {
         return (
             <AuthContext.Provider

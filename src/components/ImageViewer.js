@@ -1,5 +1,10 @@
 import React from 'react';
 
+/**
+ * This class is for the image viewer part of the application, letting the currently logged in chatter view their uploaded media items
+ * @author Jake Collins
+ */
+
 class ImageViewer extends React.Component {
   returnImageURL(imageURL) {
     alert(`Here is the URL of the desired image: ${imageURL}`)

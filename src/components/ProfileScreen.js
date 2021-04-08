@@ -5,6 +5,10 @@ import { AuthConsumer } from './AuthContext'
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 
+/**
+ * @author Logan Peterson, Jake Collins
+ */
+
 let count = 0
 class ProfileScreen extends React.Component {
     statusInput = React.createRef();

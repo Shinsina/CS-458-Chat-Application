@@ -1,13 +1,11 @@
 import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import ReactHtmlParser from 'react-html-parser';
-import AuthContext, {AuthConsumer} from './AuthContext'
+import {AuthConsumer} from './AuthContext'
 import { chatsRef, usersRef, storage, gifAPI } from '../firebase';
 import ImageViewer from './ImageViewer'
-import BotView from './BotView';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { wait } from '@testing-library/react';
 import ReactGiphySearchbox from 'react-giphy-searchbox'
 
 /**
@@ -18,7 +16,6 @@ import ReactGiphySearchbox from 'react-giphy-searchbox'
 class ChatView extends React.Component {
     constructor(props) {
         super(props);
-        //console.log(this.props.match.params)
         /**
          * chatId: Stores the ID of the current chat as a string
          * content: The content of the message editor
@@ -31,6 +28,10 @@ class ChatView extends React.Component {
          * mediaFile: Stores the image uploaded via the file uploader to allow the user to add and image which they can then use in a message whenever they please
          * otherChatters: Stores the unique ID's of chatters as strings so they can be used to fetch display names for the chatHeader (see chatHeader)
          * chatHeaders: String of all display names of otherChatters for use at the top of the page view 
+         * userImages: Stores the images that the current user has uploaded to the database locally
+         * viewingImages: Determining whether or not a chatter is trying to view their stored images or not
+         * coordinates: Stores the coordinates of the chatter when they choose to send them
+         * mapStyles: Unused CSS styling for unused in-screen map
          */
         this.state = {
             chatId: '',
@@ -57,20 +58,14 @@ class ChatView extends React.Component {
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        //console.log(this.state.timezone)
     }
 
     componentDidMount(){
         this.setState({chatId: this.props.match.params.chatId, rootUrl: window.location.href})
         this.fetchChatHeader()
-        //console.log(this.state.chatId)
-        //console.log(this.state.rootUrl)
         this.fetchMessages(this.props.match.params.chatId)
-        //console.log(this.state.chatHeader)
-        //this.deleteMessage()
     }
     componentDidUpdate(){
-        //console.log(this.state.updateCount)
         //If the user is trying to schedule a message and the page hasn't yet been updated    
         if(this.state.schedulingMessage && this.state.updateCount === 0){
         //Retrieve the various select box elements to put options into
@@ -167,10 +162,6 @@ class ChatView extends React.Component {
         const comment = this.state.content.toLowerCase();
         const parse = comment.includes("!help");
         if (parse === true) {
-           
-           // alert("How can I help you? this still a work in progress")
-            //alert(botInfo.displayName);
-            //console.log(this.chatter.displayName.toString())
 
             this.botSubmit(e, bot, timeToSend, chatter);
             
@@ -180,7 +171,7 @@ class ChatView extends React.Component {
         alert('Message failed to send')
     }
       }
-
+      //Handle replying to chatters with the bot "user" 
       botSubmit = (e, bot, timeToSend = new Date(), chatter) => {
         e.preventDefault();
         try {
@@ -348,7 +339,7 @@ class ChatView extends React.Component {
             })
         }
 
-
+    //Send the media item to the database
     sendMedia = async (URL, uploader) => {
         try{
             const userData = await usersRef
@@ -405,17 +396,21 @@ class ChatView extends React.Component {
     fetchUserProfile = (userId) => {
         this.props.history.push(`/ProfileScreen/${userId}`)
     }
-
+    //Sets the usersImages to the locally stored version of the currently logged in chatter and sets up the image viewer to be viewed
     setUserImages = (userInfo) => {
         this.setState({userImages: userInfo.userImages, viewingImages: true})
     }
 
+    //Returns the chatter to have the message window present
     returnToMessages = () => {
         this.setState({viewingImages: false})
     }
 
+    //Get the location of the current user
     getLocation = (userInfo) => {
+        //If they have locationgTracking enabled
         if(userInfo.locationTracking) {
+        //If they have allowed access to get their location
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(this.sendLocation);
         } else { 
@@ -425,12 +420,13 @@ class ChatView extends React.Component {
       alert('Your account has location services disabled please enable it to allow for this feature')  
     }
       }
-      
+    //Send the location of the current user (in the next message they send)  
     sendLocation = (position) => {
         this.setState({coordinates: {latitude: position.coords.latitude, longitude:position.coords.longitude}})
         alert('Location will be sent when message is sent')
       }
     
+    //Allow the chatter to go to a sent location from a message
       goToLocation = (message) => {
           const confirmation = window.confirm('Would you like to view the sent location?')
           if(confirmation){
@@ -528,7 +524,7 @@ class ChatView extends React.Component {
                 <Editor value={this.state.content} init={{resize: false, height:'350px' ,plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} ></Editor>
                 </div>
                 <div className="w-1/2">
-                <ReactGiphySearchbox apiKey={gifAPI} onSelect={item => alert('Copy paste the following URL using the Insert Image funcationality of the message creator ' + item.images.original.url)} masonryConfig={[{ columns: 2, imageWidth: 110, gutter: 5 },{ mq: '700px', columns: 8, imageWidth: 110, gutter: 5 },]} gifPerPage='30'/>
+                <ReactGiphySearchbox apiKey={gifAPI} onSelect={item => alert('Copy paste the following URL using the Insert Image functionality of the message creator ' + item.images.original.url)} masonryConfig={[{ columns: 2, imageWidth: 110, gutter: 5 },{ mq: '700px', columns: 8, imageWidth: 110, gutter: 5 },]} gifPerPage='30'/>
                 </div>
             </div>
             <div>
