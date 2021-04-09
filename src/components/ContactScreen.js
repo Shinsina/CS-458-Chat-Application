@@ -91,24 +91,27 @@ class ContactScreen extends React.Component {
     render() {
         return (
             <AuthConsumer>
-                {({ userInfo, createChat, goToChat }) => (
+                {({ userInfo, createChat, goToChat, colorScheme }) => (
                     <>
                         {/*These divs are for consistency with the styling of the other pages.*/}
-                        <div className="bg-gray-500 h-screen">
-                            <div className="profileHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16"></div>
+                        <div className={`${colorScheme.secondary} h-screen`}>
+                            <div className={`${colorScheme.primary} ${colorScheme.text} profileHeader flex flex-col h-48 w-full font-mono py-16`}></div>
 
                             <br />
+                            <div className={`${colorScheme.text}`}>
                             <h1><b>Add a Contact:</b></h1><br />
                             <h4>Enter their id below:</h4>
                             <input type="text" value={this.state.addingID} onChange={this.boxChange} />
                             <h4>Your unique id: {userInfo.uniqueId}</h4>
-                            <button className="border-black border-2 bg-yellow-500" onClick={(e) => this.addContact(userInfo, createChat)}>Add Contact</button>
+                            <button className={`${colorScheme.primary} border-black border-2`} onClick={(e) => this.addContact(userInfo, createChat)}>Add Contact</button>
                             <p>{this.state.addResponse}</p>
+                            
                             <br /><br /><br />
 
 
                             <h1><b>Contacts:</b></h1>
-                            {this.state.buttonInfo ? this.state.buttonInfo.map((info) => this.makeButton(info, goToChat)) : <></>}
+                            {this.state.buttonInfo ? this.state.buttonInfo.map((info) => this.makeButton(info, goToChat, colorScheme)) : <></>}
+                            </div>
                         </div>
                     </>
                 )}
@@ -116,14 +119,14 @@ class ContactScreen extends React.Component {
         )
     }
 
-    makeButton(info, goToChat) {
+    makeButton(info, goToChat, colorScheme) {
         // These get wrapped in a closure packaged with the button.
         const k = info[0];
         const displayName = info[1];
         const chatID = info[2];
 
         return (<div key={k}><h3>
-            <button className="border-black border-2 bg-yellow-500" onClick={
+            <button className={`${colorScheme.primary} border-black border-2`} onClick={
                 () => {
                     if (chatID) goToChat(chatID);
                     else console.error("Couldn't go to chat because couldn't find chat for user.")

@@ -47,6 +47,7 @@ class AuthProvider extends React.Component {
             userImages: []
         },
         overallUserUnread: [],
+        colorScheme: {}
     }
 
     componentDidMount() {
@@ -213,6 +214,12 @@ class AuthProvider extends React.Component {
                 })
                 usersRef.doc(doc.id).update({'user.onlineStatus': true})       
             })
+            if(this.state.userInfo.darkMode){
+                this.setState({colorScheme: {primary: 'bg-yellow-900', secondary: 'bg-gray-900', tertiary: 'bg-green-900', text: 'text-white'}})
+            }
+            else {
+                this.setState({colorScheme: {primary: 'bg-yellow-500', secondary: 'bg-gray-500', tertiary: 'bg-green-500', text: 'text-black'}})
+            }
             //Fetch the chats for the currently logged in user
            this.fetchChats();
         }
@@ -313,6 +320,30 @@ class AuthProvider extends React.Component {
     chatBot = () => {
         this.props.history.push(`/BotView`)
     }
+    //Toggles Dark Mode
+    toggleDarkMode = async (userInfo) => {
+        try {
+            const currentUser = await usersRef
+            .where('user.uniqueId','==',userInfo.uniqueId)
+            .get()
+            currentUser.forEach(doc => {
+                if(!doc.data().user.darkMode){
+                    console.log('Was True')
+                    usersRef.doc(doc.id).update({'user.darkMode': true})  
+                    this.setState({colorScheme: {primary: 'bg-yellow-900', secondary: 'bg-gray-900', tertiary: 'bg-green-900', text: 'text-white'}}) 
+                }
+                else {
+                    console.log('Was False')
+                    usersRef.doc(doc.id).update({'user.darkMode': false})
+                    this.setState({colorScheme: {primary: 'bg-yellow-500', secondary: 'bg-gray-500', tertiary: 'bg-green-500', text: 'text-black'}})
+                }   
+            })
+            //Fetch the chats for the currently logged in user
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }
     //Provides the functions and data stored in this class to be "consumed" by other classes
     render () {
         return (
@@ -335,7 +366,9 @@ class AuthProvider extends React.Component {
                 chatBot: this.chatBot,
                 fetchUser: this.fetchUser,
                 fetchUnreadMessages: this.fetchUnreadMessages,
-                overallUserUnread: this.state.overallUserUnread
+                overallUserUnread: this.state.overallUserUnread,
+                colorScheme: this.state.colorScheme,
+                toggleDarkMode: this.toggleDarkMode
                 }}>
                 {this.props.children}
             </AuthContext.Provider>

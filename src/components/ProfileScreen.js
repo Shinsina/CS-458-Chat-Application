@@ -67,21 +67,21 @@ class ProfileScreen extends React.Component {
         this.updateDbStatus(chatter, userFetch)
     }
 
-    renderEditView = (chatter, userFetch) => {
+    renderEditView = (chatter, userFetch, colorScheme) => {
         return <div className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
             <input
                 type="text"
                 defaultValue={chatter.activityStatus}
                 ref={this.statusInput}
             />
-            <button onClick={this.changeEditMode}>X</button>
-            <button onClick={(e) => this.updateStatus(chatter, userFetch)}>OK</button>
+            <button className={`${colorScheme.text}`} onClick={this.changeEditMode}>X</button>
+            <button className={`${colorScheme.text}`} onClick={(e) => this.updateStatus(chatter, userFetch)}>OK</button>
 
         </div>
     }
 
-    renderDefaultView = (chatter) => {
-        return <div className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono" onDoubleClick={this.changeEditMode}>
+    renderDefaultView = (chatter, colorScheme) => {
+        return <div className={`FormHeader block text-center lg:text-4xl md:text-2xl sm:text-xl font-mono ${colorScheme.text}`} onDoubleClick={this.changeEditMode}>
             <p>{chatter.activityStatus}</p>
         </div>
     }
@@ -179,7 +179,7 @@ class ProfileScreen extends React.Component {
     render() {
         return (
             <AuthConsumer>
-                {({ userInfo, fetchUser, goToChat }) => (
+                {({ userInfo, fetchUser, goToChat, colorScheme, toggleDarkMode}) => (
                     <>
                         {/*this turnary opperator checks if we are passing the other user id as a paramater*/}
                         {this.props.urlID == userInfo.uniqueId ? (
@@ -187,10 +187,10 @@ class ProfileScreen extends React.Component {
 
                             <>
                                 {console.log("Current User?")}
-                                <div className="bg-gray-500 h-screen">
-                                    <div className="profileHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
-                                    <span className="FormHeader block text-left text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                    <button className="border-black border-2 bg-yellow-500 " onClick={() => this.goBack()}>Back</button></span>
+                                <div className={`${colorScheme.secondary} ${colorScheme.text} h-screen`}>
+                                    <div className={`profileHeader flex flex-col h-48 w-full font-mono py-16 ${colorScheme.primary}`}>
+                                    <span className="FormHeader block text-left  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                    <button className={`border-black border-2 ${colorScheme.primary}`} onClick={() => this.goBack()}>Back</button></span>
                                         <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{userInfo.displayName}</p>
                                         <div className="flex justify-center">
                                             <img src={userInfo.profilePicture} width="60px" height="60px"></img>
@@ -200,22 +200,22 @@ class ProfileScreen extends React.Component {
 
                                     <div><br></br>
                                         <div>
-                                            <p>{this.state.isInEditMode ? this.renderEditView(userInfo, fetchUser) : this.renderDefaultView(userInfo)}</p>
+                                            <p>{this.state.isInEditMode ? this.renderEditView(userInfo, fetchUser, colorScheme) : this.renderDefaultView(userInfo, colorScheme)}</p>
                                         </div>
 
 
                                         <br></br>
-                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Contact List</button></span>
+                                        <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Contact List</button></span>
                                         <br></br>
-                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Dark Mode</button></span>
+                                        <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => toggleDarkMode(userInfo)}>Dark Mode</button></span>
                                         <br></br>
-                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Location Toggle</button></span>
+                                        <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Location Toggle</button></span>
                                         <br></br>
-                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Blocked Users</button></span>
+                                        <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Blocked Users</button></span>
 
                                     </div>
                                 </div>
@@ -240,29 +240,29 @@ class ProfileScreen extends React.Component {
                                     <h3>{this.state.userInfo.activityStatus}</h3>
 
                                     <br></br>
-                                    <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                        <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>Add to Contacts</button></span>
+                                    <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                        <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Add to Contacts</button></span>
                                     <br></br>
 
                                     {this.state.isUserBlocked == false ?
                                         (
                                             <>
-                                                <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                                    <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.blockOtherUser(userInfo.uniqueId)}>Block User</button></span>
+                                                <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                                    <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => this.blockOtherUser(userInfo.uniqueId)}>Block User</button></span>
                                                 <br></br>
                                             </>
                                         ) : (
                                             <>
-                                                <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                                    <button className="border-black border-2 bg-yellow-500 " onClick={(e) => this.unBlockOtherUser(userInfo.uniqueId)}>Unblock User</button></span>
+                                                <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                                    <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => this.unBlockOtherUser(userInfo.uniqueId)}>Unblock User</button></span>
                                                 <br></br>
                                             </>
                                         )}
 
 
                                     {this.state.userChats.length == 0 ? (<>
-                                        <span className="FormHeader block text-center text-black lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className="border-black border-2 bg-yellow-500 " onClick={(e) => ""}>New Chat</button></span>
+                                        <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>New Chat</button></span>
                                         <br></br>
                                     </>
 
@@ -271,7 +271,7 @@ class ProfileScreen extends React.Component {
                                             {
                                                 Object.keys(this.state.userChats).map(key =>
                                                     <div key={key}>
-                                                        <button className="border-black border-2 bg-yellow-500" onClick={(e) => goToChat(this.state.userChats[key])}>Go to Chat: {this.state.userChats[key]}</button>
+                                                        <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => goToChat(this.state.userChats[key])}>Go to Chat: {this.state.userChats[key]}</button>
                                                     </div>
                                                 )
                                             }

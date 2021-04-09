@@ -438,12 +438,12 @@ class ChatView extends React.Component {
     render () {
         return (
             <AuthConsumer>
-            {({userInfo, botInfo})=> (
+            {({userInfo, botInfo, colorScheme})=> (
             <>
-            <div className="bg-gray-500 h-screen">
+            <div className= {`${colorScheme.secondary} h-screen`}>
             <div className="h-2/3">
-            <div className="bg-yellow-500 w-full"><a href='/' className="fa fa-home">Home</a></div>
-            <div className="h-12 py-3 text-lg w-full bg-yellow-500"><p className="text-center">{this.state.chatHeader}</p></div>
+            <div className={`${colorScheme.primary} ${colorScheme.text} w-full`}><a href='/' className="fa fa-home">Home</a></div>
+            <div className={`h-12 py-3 text-lg w-full ${colorScheme.primary}`}><p className={`text-center ${colorScheme.text}`}>{this.state.chatHeader}</p></div>
             {/*IF the user is scheduling a message render this*/ }
             {this.state.schedulingMessage === true ? (
                 <form className="h-full text-center">
@@ -456,7 +456,7 @@ class ChatView extends React.Component {
                     <select id="second"></select>
                     <select id="timezone"></select>
                     <br/>
-                    <button className="" type="button" onClick={(e) => this.scheduleMessage(e,userInfo)}>Send Scheduled Message</button>
+                    <button className={`text-center ${colorScheme.text}`} type="button" onClick={(e) => this.scheduleMessage(e,userInfo)}>Send Scheduled Message</button>
                 </form>
             ) : (
             <div className="h-full overflow-y-scroll" id="messageArea">
@@ -477,7 +477,7 @@ class ChatView extends React.Component {
                     {this.state.messages[key].location ? (<p>&#128205;</p>): (<></>)}
                     </button>
                     </div>
-                    <div className="bg-yellow-500" onClick={(e) => this.deleteMessage({key})}>
+                    <div className={`${colorScheme.primary} ${colorScheme.text}`} onClick={(e) => this.deleteMessage({key})}>
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}
                         
@@ -488,7 +488,7 @@ class ChatView extends React.Component {
                     <div className="flex justify-start py-4">
                     {/*If the message wasn't sent by the current chatter*/}
                     <button onClick={(e)=> this.fetchUserProfile(this.state.messages[key].userId)}><img src={this.state.messages[key].userImage} width="50px" height="50px" alt="Profile"></img></button>
-                    <div className="bg-green-500">
+                    <div className={`${colorScheme.tertiary} ${colorScheme.text}`}>
                         {this.state.messages[key].postingUser}
                         {ReactHtmlParser(this.state.messages[key].content)}    
                     </div>
@@ -510,7 +510,7 @@ class ChatView extends React.Component {
     )}
     {!this.state.viewingImages ? (
             <form onSubmit={(e) => this.handleSubmit(e,userInfo,undefined,botInfo)}>
-            <div className="align-center text-center w-full bg-yellow-500 text-black border-black box-border border-2">
+            <div className={`${colorScheme.primary} ${colorScheme.text} align-center text-center w-full border-black box-border border-2`}>
                 <button className="w-1/5" type="submit">Submit</button>
                 <span className="w-1/5" type="button">Upload Media Here:<input type="file" onChange={this.handleImage}/>
                     {this.state.mediaFile !== null ? (<button onClick={(e) => this.uploadMedia(this.state.mediaFile,userInfo)} type="button">Upload</button>) : (<></>)}
@@ -519,7 +519,7 @@ class ChatView extends React.Component {
                 <button className="w-1/5" type="button" onClick={(e) => this.setState({schedulingMessage: !this.state.schedulingMessage, updateCount: 0})}>Schedule This Message</button>
                 <button className="w-1/5" type="button" onClick={(e) => this.getLocation(userInfo)}>Send Location</button>
             </div>
-            <div className="flex flex-row h-full bg-yellow-500 text-black border-black box-border border-">
+            <div className={`${colorScheme.primary} ${colorScheme.text} flex flex-row h-full border-black box-border border`}>
                 <div className="w-1/2 h-full">
                 <Editor value={this.state.content} init={{resize: false, height:'350px' ,plugins: ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table paste code help wordcount'],toolbar:'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'}}onEditorChange={this.handleChange} ></Editor>
                 </div>
@@ -527,11 +527,11 @@ class ChatView extends React.Component {
                 <ReactGiphySearchbox apiKey={gifAPI} onSelect={item => alert('Copy paste the following URL using the Insert Image functionality of the message creator ' + item.images.original.url)} masonryConfig={[{ columns: 2, imageWidth: 110, gutter: 5 },{ mq: '700px', columns: 8, imageWidth: 110, gutter: 5 },]} gifPerPage='30'/>
                 </div>
             </div>
-            <div>
+            <div className={`${colorScheme.primary} ${colorScheme.text}`}>
                 Chatters in this chat:  {botInfo.displayName + "(BOT) " } {userInfo.displayName}
             </div>
             </form>
-            ) : (<ImageViewer userImages={this.state.userImages} returnToMessages={this.returnToMessages}/>)}
+            ) : (<ImageViewer userImages={this.state.userImages} returnToMessages={this.returnToMessages} colorScheme={colorScheme}/>)}
             </div>
             </div>
             
