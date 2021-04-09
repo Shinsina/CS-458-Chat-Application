@@ -2,12 +2,16 @@ import React from 'react'
 import ContactListMapFilter from './ContactListMapFilter'
 import { AuthConsumer } from './AuthContext'
 
+/**
+ * This class is a wrapper for the filtered version of the Map making sure userInfo can be used within componentDidMount
+ * @author Jake Collins
+ */
+
 class ProfileScreenRenderer extends React.Component {
   constructor(props) {
     super(props)
-    // console.log(props)
     this.state = {
-      mounted: false
+      mounted: true
     }
   }
   render() {
@@ -15,7 +19,7 @@ class ProfileScreenRenderer extends React.Component {
       <AuthConsumer>
         {({userInfo}) => (
       <>
-      {this.state.mounted === false ? (
+      {this.state.mounted === true ? (
       <ContactListMapFilter userInfo={userInfo}/>
       ): (<></>) }
       </>
