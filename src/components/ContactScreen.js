@@ -88,6 +88,7 @@ class ContactScreen extends React.Component {
         let userInfo = this.userInfo;
         let userInformation = new Array();
 
+        // For each member of the contact list, grab the information required to make a button.
         const keys = Object.keys(userInfo.contactList);
         for (const k in keys) {
             let userobj;
@@ -155,6 +156,34 @@ class ContactScreen extends React.Component {
     }
 
     /**
+         * Creates a button. When this button is pressed, it takes the user to the corresponding chat.
+         * 
+         * @param buttonInfo An array containing [uniqueDOMID, displayName, chatID]. For more 
+         *                   information, refer to the implementation of ContactScreen#fetchButtonInfo().
+         * @param goToChat The goToChat() method from AuthContext.
+         * @param colorScheme The The color to make the button.
+         * @returns The JSX correspoinding to the button 
+         */
+    makeButton(buttonInfo, goToChat, colorScheme) {
+        if (debug) console.log(buttonInfo);
+
+        // These get wrapped in a closure packaged with the button.
+        const k = buttonInfo[0];
+        const displayName = buttonInfo[1];
+        const chatID = buttonInfo[2];
+
+        return (<div key={k}><h3>
+            <button className={`${colorScheme.primary} border-black border-2`} onClick={
+                () => {
+                    if (chatID) goToChat(chatID);
+                    else console.error("Couldn't go to chat because couldn't find chat for user.")
+                }}>
+                {displayName}
+            </button>
+        </h3><br /></div>);
+    }
+
+    /**
      * Renders out this component based its state.
      * 
      * This is a React hook, don't call it directly. 
@@ -172,56 +201,24 @@ class ContactScreen extends React.Component {
 
                             <br />
                             <div className={`${colorScheme.text}`}>
-                            <h1><b>Add a Contact:</b></h1><br />
-                            <h4>Enter their id below:</h4>
-                            <input type="text" value={this.state.addingID} onChange={this.boxChange} />
-                            <h4>Your unique id: {userInfo.uniqueId}</h4>
-                            <button className={`${colorScheme.primary} border-black border-2`} onClick={(e) => this.addContact(userInfo, createChat)}>Add Contact</button>
-                            <p>{this.state.addResponse}</p>
-                            
-                            <br /><br /><br />
+                                <h1><b>Add a Contact:</b></h1><br />
+                                <h4>Enter their id below:</h4>
+                                <input type="text" value={this.state.addingID} onChange={this.boxChange} />
+                                <h4>Your unique id: {userInfo.uniqueId}</h4>
+                                <button className={`${colorScheme.primary} border-black border-2`} onClick={(e) => this.addContact(userInfo, createChat)}>Add Contact</button>
+                                <p>{this.state.addResponse}</p>
+
+                                <br /><br /><br />
 
 
-                            <h1><b>Contacts:</b></h1>
-                            {this.state.buttonInfo ? this.state.buttonInfo.map((info) => this.makeButton(info, goToChat, colorScheme)) : <></>}
+                                <h1><b>Contacts:</b></h1>
+                                {this.state.buttonInfo ? this.state.buttonInfo.map((info) => this.makeButton(info, goToChat, colorScheme)) : <></>}
                             </div>
                         </div>
                     </>
                 )}
             </AuthConsumer>
         )
-    }
-
-<<<<<<< HEAD
-    /**
-     * Creates a button. When this button is pressed, it takes the user to the corresponding chat.
-     * 
-     * @param buttonInfo An array containing [uniqueDOMID, displayName, chatID]. For more 
-     *                   information, refer to the implementation of ContactScreen#fetchButtonInfo().
-     * @param goToChat The goToChat() method from AuthContext.
-     * @returns The JSX correspoinding to the button 
-     */
-    makeButton(buttonInfo, goToChat) {
-        if (debug) console.log(makeButton);
-        if (debug) console.log(buttonInfo);
-
-=======
-    makeButton(info, goToChat, colorScheme) {
->>>>>>> 1b5cd92aebe7c7649fab9cddf3025549886be304
-        // These get wrapped in a closure packaged with the button.
-        const k = buttonInfo[0];
-        const displayName = buttonInfo[1];
-        const chatID = buttonInfo[2];
-
-        return (<div key={k}><h3>
-            <button className={`${colorScheme.primary} border-black border-2`} onClick={
-                () => {
-                    if (chatID) goToChat(chatID);
-                    else console.error("Couldn't go to chat because couldn't find chat for user.")
-                }}>
-                {displayName}
-            </button>
-        </h3><br /></div>);
     }
 
     /************************/
