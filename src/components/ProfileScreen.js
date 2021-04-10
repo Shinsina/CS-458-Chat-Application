@@ -188,20 +188,23 @@ class ProfileScreen extends React.Component {
                             <>
                                 {console.log("Current User?")}
                                 <div className={`${colorScheme.secondary} ${colorScheme.text} h-screen`}>
-                                    <div className={`profileHeader flex flex-col h-48 w-full font-mono py-16 ${colorScheme.primary}`}>
-                                    <span className="FormHeader block text-left  lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                    <button className={`border-black border-2 ${colorScheme.primary}`} onClick={() => this.goBack()}>Back</button></span>
-                                        <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{userInfo.displayName}</p>
+                                <div className={`${colorScheme.primary} ${colorScheme.text} w-full`}><a href='/' className="fa fa-home">Home</a></div>
+                                    <div className={`profileHeader flex flex-col h-52 w-full font-mono py-16 ${colorScheme.primary}`}>
+                                        <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{userInfo.displayName}
                                         <div className="flex justify-center">
                                             <img src={userInfo.profilePicture} width="60px" height="60px"></img>
-                                        </div>
+                                            <br></br>
+                                            </div>
+                                            </p>
+                                            {this.state.isInEditMode ? this.renderEditView(userInfo, fetchUser, colorScheme) : this.renderDefaultView(userInfo, colorScheme)}
+                                        
+                                        
                                     </div>
+                                    
 
 
                                     <div><br></br>
-                                        <div>
-                                            <p>{this.state.isInEditMode ? this.renderEditView(userInfo, fetchUser, colorScheme) : this.renderDefaultView(userInfo, colorScheme)}</p>
-                                        </div>
+                                        
 
 
                                         <br></br>
@@ -225,14 +228,16 @@ class ProfileScreen extends React.Component {
                         ) : (
                             //this is the second part of the turnary that renders all functionality of the other user profile screen
                             <>
-                                <div className="bg-gray-500 h-screen">
-                                    <div className="profileHeader flex flex-col h-48 w-full bg-gray-300 font-mono py-16">
+                                <div className={`${colorScheme.secondary} ${colorScheme.text} h-screen`}>
+                                <div className={`${colorScheme.primary} ${colorScheme.text} w-full`}><a href='/' className="fa fa-home">Home</a></div>
+                                    <div className={`profileHeader flex flex-col h-48 w-full font-mono py-16 ${colorScheme.primary}`}>
                                         <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">{this.state.userInfo.displayName}
-                                        </p>
+                                        
 
                                         <div className="flex justify-center">
                                             <img src={this.state.userInfo.profilePicture} width="60px" height="60px"></img>
                                         </div>
+                                        </p>
 
                                     </div>
 

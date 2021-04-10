@@ -30,6 +30,7 @@ class BotView extends React.Component {
                 {({colorScheme})=> (
             <>
                 <div className={`${colorScheme.secondary} h-screen`}>
+                <div className={`${colorScheme.primary} ${colorScheme.text} w-full`}><a href='/' className="fa fa-home">Home</a></div>
                     <div className={`${colorScheme.primary} ${colorScheme.text} profileHeader flex flex-col h-48 w-full font-mono py-16`}>
                         <p className="lg:text-5xl md:text-3xl sm-text-xl break-words text-center">Bot View</p>
                     </div>
