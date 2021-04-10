@@ -193,22 +193,7 @@ class ContactScreen extends React.Component {
         )
     }
 
-<<<<<<< HEAD
-    /**
-     * Creates a button. When this button is pressed, it takes the user to the corresponding chat.
-     * 
-     * @param buttonInfo An array containing [uniqueDOMID, displayName, chatID]. For more 
-     *                   information, refer to the implementation of ContactScreen#fetchButtonInfo().
-     * @param goToChat The goToChat() method from AuthContext.
-     * @returns The JSX correspoinding to the button 
-     */
-    makeButton(buttonInfo, goToChat) {
-        if (debug) console.log(makeButton);
-        if (debug) console.log(buttonInfo);
-
-=======
     makeButton(info, goToChat, colorScheme) {
->>>>>>> 1b5cd92aebe7c7649fab9cddf3025549886be304
         // These get wrapped in a closure packaged with the button.
         const k = buttonInfo[0];
         const displayName = buttonInfo[1];

@@ -7,9 +7,6 @@ import ProfileScreenRenderer from './components/ProfileScreenRenderer'
 import {BrowserRouter,Switch,Route} from 'react-router-dom';
 import BotView from './components/BotView'
 import ContactScreenWrapper from './components/ContactScreenWrapper'
-import ReactHtmlParser from 'react-html-parser';
-import MapContainer from './components/Map'
-import {Editor} from '@tinymce/tinymce-react';
 import CurrentLocationMapFilter from './components/CurrentLocationMapFilter';
 import ContactListMapWrapper from './components/ContactListMapWrapper';
 
