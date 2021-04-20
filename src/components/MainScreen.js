@@ -96,7 +96,7 @@ class MainScreen extends React.Component {
     }
     showcaseImage = (userInfo)=>{
         this.setState({test:true})
-        if(userInfo.storyImages[userInfo.storyImages.length-1].includes(".gif", ".jpeg", ".png")){
+        if(userInfo.storyImages[userInfo.storyImages.length-1].includes("GIF", "JPEG", "PNG", "JPG", "gif", "jpeg", "png", "jpg")){
             this.setVar(userInfo)
             this.setState({isImage:true})
         }
@@ -155,8 +155,20 @@ class MainScreen extends React.Component {
                     <label for="myfile">Upload Story: </label>
                     <input type="file" id="myfile" name="myfile" accept="image/*, video/*" onChange={(e)=>this.handleImage(userInfo, e, fetchUser)}/>
                         <p align="left">{userInfo.displayName}'s Story</p>
-                        {userInfo.storyImages!==undefined ?( 
-                            <iframe width = "150px" height = "150px" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></iframe>):(<></>)}
+                        
+
+
+
+                        
+                        {userInfo.storyImages!==undefined ?
+                        (this.state.isImage===true?
+                            (<img height = "150px" width="200px" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></img>):
+                            (<iframe scrolling="no" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></iframe>)   
+                        ):(<></>)}
+                        
+
+
+                            
                     </span>
                     </div>
                     </div>
