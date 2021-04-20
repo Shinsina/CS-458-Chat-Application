@@ -180,6 +180,7 @@ class AuthProvider extends React.Component {
         }
     }
 
+    // Sends the user to the main method
     goToMainMenu = ()=>{
         try{
             this.props.history.push(`/mainMenu`)
@@ -251,8 +252,6 @@ class AuthProvider extends React.Component {
 
         const chatRef = await chatsRef.doc(chatId).get()
 
-        //console.log(chatRef.data())
-
         try{
             chatsRef.doc(chatId).delete()
         }
@@ -280,7 +279,7 @@ class AuthProvider extends React.Component {
         }
     }
 
-
+    //Get the unread messages for the user
     fetchUnreadMessages = async (chatId) => {
         const chatRef = await chatsRef.doc(chatId).get()
         try{

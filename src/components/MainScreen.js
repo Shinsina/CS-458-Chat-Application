@@ -30,6 +30,14 @@ class MainScreen extends React.Component {
         
     }
 
+    /**
+     * This function sends the media being uploaded to the user story in our firebase database
+     * 
+     * @author Tanner Bakken
+     * @param {The URL of the image or video being uploaded} URL 
+     * @param {The user doing the uploading} uploader 
+     * @param {Get the user information} fetchUser 
+     */
     sendMedia = async (URL, uploader, fetchUser) => {
         try{
             console.log(URL)
@@ -50,6 +58,14 @@ class MainScreen extends React.Component {
     
     }
 
+    /**
+     * Sends story where it needs to go, and calls the showcase method
+     * 
+     * @author Tanner Bakken
+     * @param {The info the user has} userInfo 
+     * @param {Used for technicality of getting the image} e 
+     * @param {Get the user that is using} fetchUser 
+     */
     handleImage = (userInfo, e, fetchUser) => {
         console.log(userInfo.storyImages[0])
         //e.preventDefault()
@@ -68,25 +84,7 @@ class MainScreen extends React.Component {
                 await storage.ref('images').child(image.name).getDownloadURL()
                 .then(fireBaseURL => {
                     this.setState({imageUrl:fireBaseURL})
-                    //console.log(this.state.imageUrl)
-                    //console.log(fireBaseURL)
 
-
-                    //Write a function to access the current user, and access the storyImages
-                    //array, and do a spread operator, reupload with new item appended to it
-
-                    //Access database, upload URL, put in their storyImages array the new url
-                    //Subsequent fetch will update userInfo
-                    //Uploads to storage container, not attached to a user
-                    //Go to storage, folder called images
-                    //Chat view at the bottom
-
-                    //Send media function in chat view
-                    //.then call next async function
-                    //Look between uploadMedia and sendMedia
-
-                    //Pass functions into this, recall in auth context, recall fetchUser
-                    //Pass fetchUser into the function, and then call it
                     this.sendMedia(fireBaseURL, userInfo, fetchUser)
                     
                 })
@@ -94,6 +92,12 @@ class MainScreen extends React.Component {
             
             this.showcaseImage(userInfo)
     }
+    /**
+     * This method tells whether you are using an image or a video
+     * 
+     * @author Tanner Bakken
+     * @param {The user's information} userInfo 
+     */
     showcaseImage = (userInfo)=>{
         this.setState({test:true})
         if(userInfo.storyImages[userInfo.storyImages.length-1].includes("GIF", "JPEG", "PNG", "JPG", "gif", "jpeg", "png", "jpg")){
@@ -106,6 +110,12 @@ class MainScreen extends React.Component {
         }
     }
 
+    /**
+     * This method sets the state to the story image being used
+     * 
+     * @author Tanner Bakken
+     * @param {The users information} userInfo 
+     */
     setVar = (userInfo)=>{
         this.setState({userImages:userInfo.storyImages})
     }
@@ -139,6 +149,8 @@ class MainScreen extends React.Component {
 
     /**
      * The render function ensures the following information is getting on screen
+     * 
+     * @author Tanner Bakken
      */
     render() {
   
@@ -155,20 +167,13 @@ class MainScreen extends React.Component {
                     <label for="myfile">Upload Story: </label>
                     <input type="file" id="myfile" name="myfile" accept="image/*, video/*" onChange={(e)=>this.handleImage(userInfo, e, fetchUser)}/>
                         <p align="left">{userInfo.displayName}'s Story</p>
-                        
-
-
-
-                        
+                    
                         {userInfo.storyImages!==undefined ?
                         (this.state.isImage===true?
                             (<img height = "150px" width="200px" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></img>):
                             (<iframe scrolling="no" src = {userInfo.storyImages[userInfo.storyImages.length-1]}></iframe>)   
                         ):(<></>)}
-                        
-
-
-                            
+                    
                     </span>
                     </div>
                     </div>
