@@ -20,7 +20,7 @@ class ProfileScreenRenderer extends React.Component {
         {({userInfo}) => (
       <>
       {this.state.mounted === true ? (
-      <ProfileScreen userInfo={userInfo} urlID={this.props.match.params.userId}/>
+      <ProfileScreen userInfo={userInfo} urlID={this.props.match.params.userId} history = {this.props.history}/>
       ): (<></>) }
       </>
       )}

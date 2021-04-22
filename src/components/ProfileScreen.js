@@ -121,9 +121,7 @@ class ProfileScreen extends React.Component {
             const test = await chatsRef
                 .get()
             test.forEach(doc => {
-                //console.log(doc.id, '=>', doc.data().chat.chatters.toString())
-                if (doc.data().chat.chatters.toString().includes(this.state.userInfo.uniqueId) && doc.data().chat.chatters.toString().includes(this.props.urlID)) {
-                    //console.log("HELLO")
+                if (doc.data().chat.chatters.toString().includes(this.props.userInfo.uniqueId) && doc.data().chat.chatters.toString().includes(this.props.urlID)) {
                     this.setState({ userChats: [...this.state.userChats, doc.id] })
                 }
             })
@@ -171,6 +169,13 @@ class ProfileScreen extends React.Component {
         })
     }
 
+    goToBlockedUsers = () => {
+        console.log(this)
+        console.log(this.props)
+        console.log(this.props.history)
+        this.props.history.push(`/BlockedUsers`)
+    }
+
     goBack() {
         console.log("test go back")
         window.history.back();
@@ -179,7 +184,7 @@ class ProfileScreen extends React.Component {
     render() {
         return (
             <AuthConsumer>
-                {({ userInfo, fetchUser, goToChat, colorScheme, toggleDarkMode}) => (
+                {({ userInfo, fetchUser, goToChat, colorScheme, toggleDarkMode, createChat}) => (
                     <>
                         {/*this turnary opperator checks if we are passing the other user id as a paramater*/}
                         {this.props.urlID == userInfo.uniqueId ? (
@@ -218,7 +223,7 @@ class ProfileScreen extends React.Component {
                                             <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Location Toggle</button></span>
                                         <br></br>
                                         <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>Blocked Users</button></span>
+                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => this.goToBlockedUsers()}>Blocked Users</button></span>
 
                                     </div>
                                 </div>
@@ -267,7 +272,7 @@ class ProfileScreen extends React.Component {
 
                                     {this.state.userChats.length == 0 ? (<>
                                         <span className="FormHeader block text-center  lg:text-4xl md:text-2xl sm:text-xl font-mono">
-                                            <button className={`border-black border-2 ${colorScheme.primary}`} onClick={(e) => ""}>New Chat</button></span>
+                                        <button className={`border-black border-2 ${colorScheme.primary}`}  onClick={(e)=> createChat(this.props.urlID)}>New Chat</button></span>
                                         <br></br>
                                     </>
 

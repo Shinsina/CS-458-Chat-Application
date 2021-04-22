@@ -9,6 +9,7 @@ import BotView from './components/BotView'
 import ContactScreenWrapper from './components/ContactScreenWrapper'
 import CurrentLocationMapFilter from './components/CurrentLocationMapFilter';
 import ContactListMapWrapper from './components/ContactListMapWrapper';
+import BlockedUsers from './components/BlockedUsers';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
     <Route exact path="/Contacts" component={ContactScreenWrapper}/>
     <Route exact path="/Map" component={ContactListMapWrapper}/>
     <Route exact path ="/CurrentLocation/:username/:lat/:lng" component={CurrentLocationMapFilter}/>
+    <Route exact path = "/BlockedUsers" component={BlockedUsers}/>
     </Switch>
     </AuthProvider>
     </BrowserRouter>
