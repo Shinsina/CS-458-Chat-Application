@@ -72,14 +72,14 @@ class MainScreen extends React.Component {
         const image = e.target.files[0]
         //this.state.imageFile = image;
         this.setState({imageFile: image})
-
+        console.log(this.imageFile)
         //The else of the sign up goes here
         const uploadTask = storage.ref(`/images/${image.name}`).put(image)
             uploadTask.on('state_changed', 
             (snapShot) => {
-                //console.log(snapShot)
+                console.log(snapShot)
             }, (err) => {
-                //console.log(err)
+                console.log(err)
             }, async () => {
                 await storage.ref('images').child(image.name).getDownloadURL()
                 .then(fireBaseURL => {
@@ -108,6 +108,7 @@ class MainScreen extends React.Component {
             this.setVar(userInfo)
             this.setState({isImage:false})
         }
+        console.log(isImage)
     }
 
     /**
