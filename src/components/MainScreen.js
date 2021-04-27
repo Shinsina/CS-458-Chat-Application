@@ -108,7 +108,7 @@ class MainScreen extends React.Component {
             this.setVar(userInfo)
             this.setState({isImage:false})
         }
-        console.log(isImage)
+        // console.log(isImage)
     }
 
     /**
